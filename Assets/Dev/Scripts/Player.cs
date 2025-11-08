@@ -5,16 +5,24 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public FloatingJoystick joy;
+    public GameObject slash;
 
     Rigidbody2D rb;
-    Vector2 input;
+    
+    float timer;
+    float attackCd;
+    float lastAttackTime;
 
     void Start(){
         rb = GetComponent<Rigidbody2D>();
+
+        timer=0;
+        attackCd=0.7f;
+        lastAttackTime=-999;
     }
 
     void Update(){
-        
+        timer+=Time.deltaTime;
     }
 
     void FixedUpdate(){
@@ -26,7 +34,7 @@ public class Player : MonoBehaviour
         float h = joy.Horizontal;
         float v = joy.Vertical;
 
-        input = new Vector2(h, v);
+        Vector2 input = new Vector2(h, v);
 
         if (input.magnitude > 1f) input.Normalize();
 
@@ -34,14 +42,20 @@ public class Player : MonoBehaviour
         rb.MovePosition(rb.position + nextPos);
 
         if (input != Vector2.zero){
-            //방향
+            Transform direction = transform.Find("PlayerDirection");
+            float targetAngle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(0, 0, targetAngle);
+            direction.rotation = Quaternion.Lerp(direction.rotation, targetRotation, Time.fixedDeltaTime * 15);
         }
-        else{
+        else if(timer>lastAttackTime+attackCd){
             Attack();
+            lastAttackTime=timer;
         }
     }
 
+    //공격
     void Attack(){
+        Instantiate(slash,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
     }
 
 }
