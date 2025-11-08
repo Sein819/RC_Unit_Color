@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public FloatingJoystick joy;
+
     Rigidbody2D rb;
     Vector2 input;
 
@@ -12,12 +14,34 @@ public class Player : MonoBehaviour
     }
 
     void Update(){
-        input.x = Input.GetAxisRaw("Horizontal");
-        input.y = Input.GetAxisRaw("Vertical");
-        input = input.normalized;
+        
     }
 
     void FixedUpdate(){
-        rb.MovePosition(rb.position + input * 3f * Time.fixedDeltaTime);
+        Move();
     }
+
+    //이동
+    void Move(){
+        float h = joy.Horizontal;
+        float v = joy.Vertical;
+
+        input = new Vector2(h, v);
+
+        if (input.magnitude > 1f) input.Normalize();
+
+        Vector2 nextPos = input * 3 * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + nextPos);
+
+        if (input != Vector2.zero){
+            //방향
+        }
+        else{
+            Attack();
+        }
+    }
+
+    void Attack(){
+    }
+
 }
