@@ -1122,6 +1122,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joy: {fileID: 1045271288}
   slash: {fileID: 8311448205417339434, guid: eafa6667e7fd74841be4dcaf829da66e, type: 3}
+  maxHp: 0
+  hp: 0
+  attackPower: 0
+  attackSpeed: 0
 --- !u!58 &715265590
 CircleCollider2D:
   m_ObjectHideFlags: 0
