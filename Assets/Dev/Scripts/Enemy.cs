@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
     Rigidbody2D rb;
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
+    Animator anim;
 
     public int type;
     public float maxHp;
@@ -21,23 +22,25 @@ public class Enemy : MonoBehaviour
     float timer;
     float attackCd;
     float lastAttackTime;
+    bool isRunning;
 
     void Awake(){
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
+        anim=GetComponent<Animator>();
     }
 
     void Start(){
         if(type==1){
             maxHp=50;
             attackPower=200;
-            attackSpeed=50;
+            attackSpeed=25;
         }
         else{
             maxHp=10;
             attackPower=100;
-            attackSpeed=100;
+            attackSpeed=50;
         }
         hp=maxHp;
         dead=false;
@@ -45,22 +48,26 @@ public class Enemy : MonoBehaviour
         timer=0;
         attackCd=0.7f;
         lastAttackTime=-999;
+        isRunning=false;
     }
 
     void Update(){
         timer+=Time.deltaTime;
+        anim.SetBool("IsRunning", isRunning);
 
         if(dead) return;
 
         //플레이어가 가까이 있으면
         if(timer>lastAttackTime+attackCd/attackSpeed*100){
-            Attack();
+            StartCoroutine(Attack());
             lastAttackTime=timer;
         }
     }
 
-    void Attack(){
+    IEnumerator Attack(){
         //공격 애니메이션
+        anim.SetTrigger("Attack");
+        yield return new WaitForSeconds(0.3f);
         Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
     }
 
