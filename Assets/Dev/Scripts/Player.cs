@@ -87,7 +87,7 @@ public class Player : MonoBehaviour
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 1f);
         sr.SetPropertyBlock(mpb);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.15f);
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 0f);
         sr.SetPropertyBlock(mpb);
