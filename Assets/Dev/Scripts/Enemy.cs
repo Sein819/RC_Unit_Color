@@ -25,7 +25,13 @@ public class Enemy : MonoBehaviour
     float lastAttackTime;
     bool isRunning;
 
-    void Awake(){
+    // 플레이어 추적 관련 변수 추가
+    public Transform player;          // 플레이어 Transform 연결용
+    public float moveSpeed = 2f;      // 적 이동 속도
+    public float attackRange = 1.5f;  // 플레이어와의 공격 거리
+
+    void Awake()
+    {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
@@ -51,16 +57,37 @@ public class Enemy : MonoBehaviour
     }
 
     void Update(){
-        timer+=Time.deltaTime;
+        if (dead) return;
+
+        timer += Time.deltaTime;
         anim.SetBool("IsRunning", isRunning);
 
-        if(dead) return;
+        // $$ 플레이어 추적 기능 시작
+        if (player != null)
+        {
+            // 플레이어까지의 거리 계산
+            float distance = Vector2.Distance(transform.position, player.position);
 
-        //플레이어가 가까이 있으면
-        if(timer>lastAttackTime+attackCd/attackSpeed*100){
-            StartCoroutine(Attack());
-            lastAttackTime=timer;
+            // 공격 범위 밖이면 플레이어 쪽으로 이동
+            if (distance > attackRange)
+            {
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+            }
+            // 공격 범위 안이면 공격 시도
+            else if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+            {
+                StartCoroutine(Attack());
+                lastAttackTime = timer;
+            }
+
+            // 플레이어 방향에 따라 스프라이트 좌우 반전
+            if (player.position.x < transform.position.x)
+                sr.flipX = true;
+            else
+                sr.flipX = false;
         }
+        // 플레이어 추적 기능 끝
     }
 
     IEnumerator Attack(){
