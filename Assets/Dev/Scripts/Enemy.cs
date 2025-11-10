@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
     // 플레이어 추적 관련 변수 추가
     public Transform player;          // 플레이어 Transform 연결용
     public float moveSpeed = 2f;      // 적 이동 속도
-    public float attackRange = 1.5f;  // 플레이어와의 공격 거리
+    public float attackRange = 0.5f;  // 플레이어와의 공격 거리
 
     void Awake()
     {
@@ -54,6 +54,9 @@ public class Enemy : MonoBehaviour
         attackCd=0.7f;
         lastAttackTime=-999;
         isRunning=false;
+
+        if (player == null)
+            player = GameObject.FindWithTag("Player").transform;
     }
 
     void Update(){
@@ -73,12 +76,16 @@ public class Enemy : MonoBehaviour
             {
                 Vector2 direction = (player.position - transform.position).normalized;
                 rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+                isRunning=true;
             }
             // 공격 범위 안이면 공격 시도
-            else if (timer > lastAttackTime + attackCd / attackSpeed * 100)
-            {
-                StartCoroutine(Attack());
-                lastAttackTime = timer;
+            else {
+                isRunning=false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+                {
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
             }
 
             // 플레이어 방향에 따라 스프라이트 좌우 반전
