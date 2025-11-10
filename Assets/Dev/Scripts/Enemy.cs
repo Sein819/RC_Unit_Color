@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
 
+    public int type;
     public float maxHp;
     public float hp;
     public float attackPower;
@@ -28,10 +29,17 @@ public class Enemy : MonoBehaviour
     }
 
     void Start(){
-        maxHp=20;
+        if(type==1){
+            maxHp=50;
+            attackPower=200;
+            attackSpeed=50;
+        }
+        else{
+            maxHp=10;
+            attackPower=100;
+            attackSpeed=100;
+        }
         hp=maxHp;
-        attackPower=100;
-        attackSpeed=100;
         dead=false;
 
         timer=0;
@@ -61,7 +69,7 @@ public class Enemy : MonoBehaviour
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 1f);
         sr.SetPropertyBlock(mpb);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.15f);
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 0f);
         sr.SetPropertyBlock(mpb);
