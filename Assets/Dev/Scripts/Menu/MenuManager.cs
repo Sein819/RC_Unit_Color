@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
     void Start(){
-        
+        Application.targetFrameRate = 60;
     }
 
     void Update(){
