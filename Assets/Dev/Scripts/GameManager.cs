@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
         colorRoom.SetActive(false);
         casino.SetActive(false);
         finalSkillGiver.SetActive(false);
-        for(int i=0;i<3;i++) color[0].SetActive(false);
+        for(int i=0;i<3;i++) color[i].SetActive(false);
         
         enemyAmount=0;
         roomCount++;
