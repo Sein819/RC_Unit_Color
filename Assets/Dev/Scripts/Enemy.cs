@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
 
     // 플레이어 추적 관련 변수 추가
     public Transform player;          // 플레이어 Transform 연결용
-    public float moveSpeed = 2f;      // 적 이동 속도
+    public float moveSpeed;      // 적 이동 속도
     public float attackRange;  // 플레이어와의 공격 거리
 
     void Awake()
@@ -41,11 +41,13 @@ public class Enemy : MonoBehaviour
             maxHp=50;
             attackPower=200;
             attackSpeed=25;
+            moveSpeed=1.5f;
         }
         else{
             maxHp=10;
             attackPower=100;
             attackSpeed=50;
+            moveSpeed=2;
         }
         hp=maxHp;
         dead=false;
