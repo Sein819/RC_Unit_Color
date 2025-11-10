@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5335963409692413646}
   - component: {fileID: 1390325801923467551}
   - component: {fileID: 2693175283924406225}
+  - component: {fileID: 1391242149744736558}
   m_Layer: 0
   m_Name: ColorBoss
   m_TagString: Enemy
@@ -168,3 +169,24 @@ MonoBehaviour:
   attackPower: 0
   attackSpeed: 0
   dead: 0
+--- !u!95 &1391242149744736558
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110917707337728318}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
