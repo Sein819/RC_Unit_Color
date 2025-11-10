@@ -163,6 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPrefab: {fileID: 8311448205417339434, guid: 216a3bc7c739fbc45a66fa0bde6a2d9d, type: 3}
+  dieEffect: {fileID: 1857132746624371987, guid: 3effd5afdc5e828409a02c471d9f4adf, type: 3}
   type: 0
   maxHp: 0
   hp: 0

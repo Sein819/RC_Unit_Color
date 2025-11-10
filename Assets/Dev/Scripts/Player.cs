@@ -26,9 +26,7 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
-    }
 
-    void Start(){
         maxHp=100;
         hp=maxHp;
         attackPower=100;
@@ -39,7 +37,7 @@ public class Player : MonoBehaviour
         attackCd=0.7f;
         lastAttackTime=-999;
     }
-
+    
     void Update(){
         timer+=Time.deltaTime;
     }

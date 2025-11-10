@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public GameObject attackPrefab;
+    public GameObject dieEffect;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
@@ -29,9 +30,7 @@ public class Enemy : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
         anim=GetComponent<Animator>();
-    }
 
-    void Start(){
         if(type==1){
             maxHp=50;
             attackPower=200;
@@ -85,6 +84,7 @@ public class Enemy : MonoBehaviour
     //사망
     public void Die(){
         dead=true;
+        Instantiate(dieEffect,transform.position,transform.rotation);
         GameManager.instance.EnmeyDie();
         Destroy(gameObject);
     }
