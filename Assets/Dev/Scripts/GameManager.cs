@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
         defaultMat.SetFloat("_G",0);
         defaultMat.SetFloat("_B",0);
 
-        SpawnEnemy(0,5+roomCount/5);
+        SpawnEnemy(0,5+roomCount/3);
     }
 
     void Update(){
