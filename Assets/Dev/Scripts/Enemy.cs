@@ -5,11 +5,14 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public GameObject attackPrefab;
+    public GameObject dieEffect;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
+    Animator anim;
 
+    public int type;
     public float maxHp;
     public float hp;
     public float attackPower;
@@ -20,6 +23,7 @@ public class Enemy : MonoBehaviour
     float timer;
     float attackCd;
     float lastAttackTime;
+    bool isRunning;
 
     // 플레이어 추적 관련 변수 추가
     public Transform player;          // 플레이어 Transform 연결용
@@ -31,29 +35,32 @@ public class Enemy : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
+        anim=GetComponent<Animator>();
+
+        if(type==1){
+            maxHp=50;
+            attackPower=200;
+            attackSpeed=25;
+        }
+        else{
+            maxHp=10;
+            attackPower=100;
+            attackSpeed=50;
+        }
+        hp=maxHp;
+        dead=false;
+
+        timer=0;
+        attackCd=0.7f;
+        lastAttackTime=-999;
+        isRunning=false;
     }
 
-    void Start()
-    {
-        maxHp = 20;
-        hp = maxHp;
-        attackPower = 100;
-        attackSpeed = 100;
-        dead = false;
-
-        timer = 0;
-        attackCd = 0.7f;
-        lastAttackTime = -999;
-
-        if (player == null)
-            player = GameObject.FindWithTag("Player").transform;
-    }
-
-    void Update()
-    {
+    void Update(){
         if (dead) return;
 
         timer += Time.deltaTime;
+        anim.SetBool("IsRunning", isRunning);
 
         // $$ 플레이어 추적 기능 시작
         if (player != null)
@@ -70,7 +77,7 @@ public class Enemy : MonoBehaviour
             // 공격 범위 안이면 공격 시도
             else if (timer > lastAttackTime + attackCd / attackSpeed * 100)
             {
-                Attack();
+                StartCoroutine(Attack());
                 lastAttackTime = timer;
             }
 
@@ -83,24 +90,28 @@ public class Enemy : MonoBehaviour
         // 플레이어 추적 기능 끝
     }
 
-    void Attack()
-    {
-        // 공격 애니메이션
-        Instantiate(attackPrefab, new Vector2(transform.position.x, transform.position.y + 0.4f), transform.rotation);
+    IEnumerator Attack(){
+        //공격 애니메이션
+        anim.SetTrigger("Attack");
+        yield return new WaitForSeconds(0.3f);
+        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
     }
 
     //피해 입기
-    public IEnumerator HitColor()
-    {
-        sr.color = Color.red;
-        yield return new WaitForSeconds(0.3f);
-        sr.color = Color.white;
+    public IEnumerator HitColor(){
+        sr.GetPropertyBlock(mpb);
+        mpb.SetFloat("_IsDamaged", 1f);
+        sr.SetPropertyBlock(mpb);
+        yield return new WaitForSeconds(0.15f);
+        sr.GetPropertyBlock(mpb);
+        mpb.SetFloat("_IsDamaged", 0f);
+        sr.SetPropertyBlock(mpb);
     }
 
     //사망
-    public void Die()
-    {
-        dead = true;
+    public void Die(){
+        dead=true;
+        Instantiate(dieEffect,transform.position,transform.rotation);
         GameManager.instance.EnmeyDie();
         Destroy(gameObject);
     }
