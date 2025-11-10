@@ -22,11 +22,13 @@ public class Player : MonoBehaviour
     float attackCd;
     float lastAttackTime;
 
-    void Start(){
+    void Awake(){
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
+    }
 
+    void Start(){
         maxHp=100;
         hp=maxHp;
         attackPower=100;

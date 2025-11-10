@@ -1126,6 +1126,7 @@ MonoBehaviour:
   hp: 0
   attackPower: 0
   attackSpeed: 0
+  dead: 0
 --- !u!58 &715265590
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1158,7 +1159,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.5}
   serializedVersion: 2
   m_Radius: 0.65655595
 --- !u!1 &719597806
@@ -2395,6 +2396,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 715265585}
   pRigid: {fileID: 715265588}
+  enemy: {fileID: 1110917707337728318, guid: 21a94b7615462094fb181a4acb9eb4c4, type: 3}
 --- !u!4 &2012733360
 Transform:
   m_ObjectHideFlags: 0
