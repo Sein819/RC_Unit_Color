@@ -61,7 +61,8 @@ public class Player : MonoBehaviour
         rb.MovePosition(rb.position + nextPos);
 
         if (input != Vector2.zero){
-            //방향 애니메이션
+            if(input.x>0) sr.flipX = false;
+            else if(input.x<0) sr.flipX = true;
 
             Transform direction = transform.Find("PlayerDirection");
             float targetAngle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
