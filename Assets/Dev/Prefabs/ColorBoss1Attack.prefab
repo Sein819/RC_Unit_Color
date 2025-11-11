@@ -56,7 +56,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 1
+    scalar: 0.8
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -4944,6 +4944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slashParticle: {fileID: 0}
+  col: {fileID: 0}
   type: 1
   destroyTime: 2
 --- !u!58 &2885379789818823919
@@ -5097,7 +5098,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -9923,7 +9924,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 1
+    scalar: 0.8
     minScalar: 0
     maxCurve:
       serializedVersion: 2

@@ -29,8 +29,8 @@ public class EnemyAttack : MonoBehaviour
     void Update(){
         timer+=Time.deltaTime;
 
-        if(type==1&&timer>1&&timer<1.2f) col.enabled=true;
-        if(type==1&&timer>=1.2f) col.enabled=false;
+        if(type==1&&timer>0.8f&&timer<1f) col.enabled=true;
+        if(type==1&&timer>=1f) col.enabled=false;
     }
 
     //데미지

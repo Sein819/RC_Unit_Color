@@ -127,17 +127,19 @@ public class Enemy : MonoBehaviour
         else if(type==1){
             immune+=1;
             col.enabled=false;
-            for(int i=0;i<30;i++){
-                transform.position+=new Vector3(0,0.4f,0);
+            for(float i=0;i<15;){
+                transform.position+=new Vector3(0,Time.deltaTime*30,0);
                 yield return null;
+                i+=Time.deltaTime*30;
             }
             Vector2 pos = GameManager.instance.player.transform.position;
             Instantiate(attackPrefab,pos,transform.rotation);
-            yield return new WaitForSeconds(0.45f);
+            yield return new WaitForSeconds(0.40f);
             transform.position=pos+new Vector2(0,10);
-            for(int i=0;i<20;i++){
-                transform.position-=new Vector3(0,0.5f,0);
+            for(float i=0;i<10;){
+                transform.position-=new Vector3(0,Time.deltaTime*30,0);
                 yield return null;
+                i+=Time.deltaTime*30;
             }
             col.enabled=true;
             immune-=1;
