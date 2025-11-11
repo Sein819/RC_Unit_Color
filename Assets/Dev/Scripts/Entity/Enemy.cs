@@ -27,7 +27,6 @@ public class Enemy : MonoBehaviour
     bool isAttacking;
 
     // 플레이어 추적 관련 변수 추가
-    public Transform player;          // 플레이어 Transform 연결용
     public float moveSpeed;      // 적 이동 속도
     public float attackRange;  // 플레이어와의 공격 거리
 
@@ -43,18 +42,19 @@ public class Enemy : MonoBehaviour
             attackPower=200;
             attackSpeed=25;
             moveSpeed=1.5f;
+            attackCd=4f;
         }
         else{
             maxHp=10;
             attackPower=100;
             attackSpeed=50;
             moveSpeed=2;
+            attackCd=0.7f;
         }
         hp=maxHp;
         dead=false;
 
         timer=0;
-        attackCd=0.7f;
         lastAttackTime=-999;
         isRunning=false;
         attackRange = 0.7f;
@@ -65,6 +65,11 @@ public class Enemy : MonoBehaviour
         if (dead) return;
         timer += Time.deltaTime;
         anim.SetBool("IsRunning", isRunning);
+
+        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==1){
+            StartCoroutine(Attack());
+            lastAttackTime = timer;
+        }
     }
 
     void FixedUpdate(){
@@ -89,7 +94,7 @@ public class Enemy : MonoBehaviour
         // 공격 범위 안이면 공격 시도
         else {
             isRunning=false;
-            if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+            if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==0)
             {
                 StartCoroutine(Attack());
                 lastAttackTime = timer;
@@ -108,7 +113,7 @@ public class Enemy : MonoBehaviour
         isAttacking=true;
         anim.SetTrigger("Attack");
         yield return new WaitForSeconds(0.3f);
-        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),transform.rotation);
+        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
         yield return new WaitForSeconds(0.2f);
         isAttacking=false;
     }

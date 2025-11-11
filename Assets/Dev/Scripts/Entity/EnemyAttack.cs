@@ -8,7 +8,7 @@ public class EnemyAttack : MonoBehaviour
 
     void Start(){
         var mainModule = slashParticle.main;
-        mainModule.startRotation = Mathf.Deg2Rad * (-transform.rotation.eulerAngles.z+90);
+        mainModule.startRotation = Mathf.Deg2Rad * transform.rotation.z;
 
         Destroy(gameObject,0.2f);
     }
