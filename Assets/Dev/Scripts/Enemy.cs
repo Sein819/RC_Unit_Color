@@ -24,6 +24,7 @@ public class Enemy : MonoBehaviour
     float attackCd;
     float lastAttackTime;
     bool isRunning;
+    bool isAttacking;
 
     // 플레이어 추적 관련 변수 추가
     public Transform player;          // 플레이어 Transform 연결용
@@ -57,54 +58,59 @@ public class Enemy : MonoBehaviour
         lastAttackTime=-999;
         isRunning=false;
         attackRange = 0.7f;
-
-        if (player == null)
-            player = GameObject.FindWithTag("Player").transform;
+        isAttacking=false;
     }
 
     void Update(){
         if (dead) return;
-
         timer += Time.deltaTime;
         anim.SetBool("IsRunning", isRunning);
+    }
 
-        // $$ 플레이어 추적 기능 시작
-        if (player != null)
+    void FixedUpdate(){
+        if (dead) return;
+        Move();
+    }
+
+    //이동
+    void Move(){
+        Transform player = GameManager.instance.player.transform;
+        // 플레이어까지의 거리 계산
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+
+        // 공격 범위 밖이면 플레이어 쪽으로 이동
+        if (distance > attackRange)
         {
-            // 플레이어까지의 거리 계산
-            float distance = Vector2.Distance(transform.position, player.position);
-
-            // 공격 범위 밖이면 플레이어 쪽으로 이동
-            if (distance > attackRange)
-            {
-                Vector2 direction = (player.position - transform.position).normalized;
-                rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
-                isRunning=true;
-            }
-            // 공격 범위 안이면 공격 시도
-            else {
-                isRunning=false;
-                if (timer > lastAttackTime + attackCd / attackSpeed * 100)
-                {
-                    StartCoroutine(Attack());
-                    lastAttackTime = timer;
-                }
-            }
-
-            // 플레이어 방향에 따라 스프라이트 좌우 반전
-            if (player.position.x < transform.position.x)
-                sr.flipX = true;
-            else
-                sr.flipX = false;
+            if(isAttacking) return;
+            Vector2 direction = (player.position - transform.position).normalized;
+            rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+            isRunning=true;
         }
-        // 플레이어 추적 기능 끝
+        // 공격 범위 안이면 공격 시도
+        else {
+            isRunning=false;
+            if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+            {
+                StartCoroutine(Attack());
+                lastAttackTime = timer;
+            }
+        }
+
+        // 플레이어 방향에 따라 스프라이트 좌우 반전
+        if (player.position.x < transform.position.x)
+            sr.flipX = true;
+        else
+            sr.flipX = false;
     }
 
     IEnumerator Attack(){
         //공격 애니메이션
+        isAttacking=true;
         anim.SetTrigger("Attack");
         yield return new WaitForSeconds(0.3f);
-        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
+        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),transform.rotation);
+        yield return new WaitForSeconds(0.2f);
+        isAttacking=false;
     }
 
     //피해 입기
