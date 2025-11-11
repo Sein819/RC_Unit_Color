@@ -101,7 +101,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -144,7 +144,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -164,13 +164,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPrefab: {fileID: 8311448205417339434, guid: 216a3bc7c739fbc45a66fa0bde6a2d9d, type: 3}
   dieEffect: {fileID: 1857132746624371987, guid: 3effd5afdc5e828409a02c471d9f4adf, type: 3}
+  colorBoss1Attack: {fileID: 3970491398672668583, guid: ceaa1acb2dfdba545a8e773830b81c07, type: 3}
   type: 0
   maxHp: 0
   hp: 0
   attackPower: 0
   attackSpeed: 0
   dead: 0
-  player: {fileID: 0}
   moveSpeed: 2
   attackRange: 1.5
 --- !u!95 &691662407787903857

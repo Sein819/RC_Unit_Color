@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
     Animator anim;
+    Collider2D col;
 
     public int type;
     public float maxHp;
@@ -19,6 +20,8 @@ public class Enemy : MonoBehaviour
     public float attackSpeed;
     [HideInInspector]
     public bool dead;
+    [HideInInspector]
+    public int immune;
 
     float timer;
     float attackCd;
@@ -36,11 +39,12 @@ public class Enemy : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
         anim=GetComponent<Animator>();
+        col=GetComponent<Collider2D>();
 
         if(type==1){
             maxHp=50;
             attackPower=200;
-            attackSpeed=25;
+            attackSpeed=100;
             moveSpeed=1.5f;
             attackCd=4f;
         }
@@ -59,12 +63,13 @@ public class Enemy : MonoBehaviour
         isRunning=false;
         attackRange = 0.7f;
         isAttacking=false;
+        immune=0;
     }
 
     void Update(){
         if (dead) return;
         timer += Time.deltaTime;
-        anim.SetBool("IsRunning", isRunning);
+        if(type!=1) anim.SetBool("IsRunning", isRunning);
 
         if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==1){
             StartCoroutine(Attack());
@@ -83,21 +88,23 @@ public class Enemy : MonoBehaviour
         // 플레이어까지의 거리 계산
         float distance = Vector2.Distance(transform.position, player.transform.position);
 
-        // 공격 범위 밖이면 플레이어 쪽으로 이동
-        if (distance > attackRange)
-        {
-            if(isAttacking) return;
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
-            isRunning=true;
-        }
-        // 공격 범위 안이면 공격 시도
-        else {
-            isRunning=false;
-            if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==0)
+        if(type==0){
+            // 공격 범위 밖이면 플레이어 쪽으로 이동
+            if (distance > attackRange)
             {
-                StartCoroutine(Attack());
-                lastAttackTime = timer;
+                if(isAttacking) return;
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+                isRunning=true;
+            }
+            // 공격 범위 안이면 공격 시도
+            else {
+                isRunning=false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+                {
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
             }
         }
 
@@ -108,13 +115,33 @@ public class Enemy : MonoBehaviour
             sr.flipX = false;
     }
 
+    //공격
     IEnumerator Attack(){
-        //공격 애니메이션
         isAttacking=true;
         anim.SetTrigger("Attack");
-        yield return new WaitForSeconds(0.3f);
-        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
-        yield return new WaitForSeconds(0.2f);
+        if(type==0){
+            yield return new WaitForSeconds(0.3f);
+            Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
+            yield return new WaitForSeconds(0.2f);
+        }
+        else if(type==1){
+            immune+=1;
+            col.enabled=false;
+            for(int i=0;i<30;i++){
+                transform.position+=new Vector3(0,0.4f,0);
+                yield return null;
+            }
+            Vector2 pos = GameManager.instance.player.transform.position;
+            Instantiate(attackPrefab,pos,transform.rotation);
+            yield return new WaitForSeconds(0.45f);
+            transform.position=pos+new Vector2(0,10);
+            for(int i=0;i<20;i++){
+                transform.position-=new Vector3(0,0.5f,0);
+                yield return null;
+            }
+            col.enabled=true;
+            immune-=1;
+        }
         isAttacking=false;
     }
 

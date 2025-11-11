@@ -4968,3 +4968,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slashParticle: {fileID: 7264431864591096096}
+  type: 0
+  destroyTime: 0.2
