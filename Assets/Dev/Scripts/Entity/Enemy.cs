@@ -11,14 +11,16 @@ public class Enemy : MonoBehaviour
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
     Animator anim;
+    Collider2D col;
 
     public int type;
     public float maxHp;
     public float hp;
-    public float attackPower;
     public float attackSpeed;
     [HideInInspector]
     public bool dead;
+    [HideInInspector]
+    public int immune;
 
     float timer;
     float attackCd;
@@ -36,20 +38,28 @@ public class Enemy : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
         anim=GetComponent<Animator>();
+        col=GetComponent<Collider2D>();
 
         if(type==1){
             maxHp=50;
-            attackPower=200;
-            attackSpeed=25;
+            attackSpeed=100;
             moveSpeed=1.5f;
             attackCd=4f;
+            attackRange = 0.7f;
+        }
+        else if(type==101){
+            maxHp=200;
+            attackSpeed=100;
+            moveSpeed=1.5f;
+            attackCd=3f;
+            attackRange = 3.5f;
         }
         else{
             maxHp=10;
-            attackPower=100;
             attackSpeed=50;
             moveSpeed=2;
             attackCd=0.7f;
+            attackRange = 0.7f;
         }
         hp=maxHp;
         dead=false;
@@ -57,18 +67,19 @@ public class Enemy : MonoBehaviour
         timer=0;
         lastAttackTime=-999;
         isRunning=false;
-        attackRange = 0.7f;
         isAttacking=false;
+        immune=0;
     }
 
     void Update(){
         if (dead) return;
         timer += Time.deltaTime;
-        anim.SetBool("IsRunning", isRunning);
+        if(type!=1&&type!=101) anim.SetBool("IsRunning", isRunning);
 
-        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==1){
+
+        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && (type==1||type==101)){
             StartCoroutine(Attack());
-            lastAttackTime = timer;
+            lastAttackTime = timer+Random.Range(0f,1.5f);
         }
     }
 
@@ -83,21 +94,24 @@ public class Enemy : MonoBehaviour
         // 플레이어까지의 거리 계산
         float distance = Vector2.Distance(transform.position, player.transform.position);
 
-        // 공격 범위 밖이면 플레이어 쪽으로 이동
-        if (distance > attackRange)
-        {
-            if(isAttacking) return;
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
-            isRunning=true;
-        }
-        // 공격 범위 안이면 공격 시도
-        else {
-            isRunning=false;
-            if (timer > lastAttackTime + attackCd / attackSpeed * 100 && type==0)
+        if(type!=1){
+            if(type==101&&isAttacking) return;
+            // 공격 범위 밖이면 플레이어 쪽으로 이동
+            if (distance > attackRange)
             {
-                StartCoroutine(Attack());
-                lastAttackTime = timer;
+                if(isAttacking) return;
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+                isRunning=true;
+            }
+            // 공격 범위 안이면 공격 시도
+            else {
+                isRunning=false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100&&type==0)
+                {
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
             }
         }
 
@@ -108,13 +122,44 @@ public class Enemy : MonoBehaviour
             sr.flipX = false;
     }
 
+    //공격
     IEnumerator Attack(){
-        //공격 애니메이션
         isAttacking=true;
         anim.SetTrigger("Attack");
-        yield return new WaitForSeconds(0.3f);
-        Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
-        yield return new WaitForSeconds(0.2f);
+        //기본 적
+        if(type==0){
+            yield return new WaitForSeconds(0.3f);
+            Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
+            yield return new WaitForSeconds(0.2f);
+        }
+        //색보스1
+        else if(type==1){
+            immune+=1;
+            col.enabled=false;
+            for(float i=0;i<15;){
+                transform.position+=new Vector3(0,Time.deltaTime*30,0);
+                yield return null;
+                i+=Time.deltaTime*30;
+            }
+            Vector2 pos = GameManager.instance.player.transform.position;
+            Instantiate(attackPrefab,pos,transform.rotation);
+            yield return new WaitForSeconds(0.40f);
+            transform.position=pos+new Vector2(0,10);
+            for(float i=0;i<10;){
+                transform.position-=new Vector3(0,Time.deltaTime*30,0);
+                yield return null;
+                i+=Time.deltaTime*30;
+            }
+            col.enabled=true;
+            immune-=1;
+        }
+        //최종 보스
+        else if(type==101){
+            immune+=1;
+            Instantiate(attackPrefab,GameManager.instance.player.transform.position,transform.rotation);
+            yield return new WaitForSeconds(1f);
+            immune-=1;
+        }
         isAttacking=false;
     }
 

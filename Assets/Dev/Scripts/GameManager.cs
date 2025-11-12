@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public Rigidbody2D pRigid;
     public GameObject enemy;
     public GameObject colorBoss;
+    public GameObject finalBoss;
     public GameObject defaultRoom;
     public GameObject colorRoom;
     public GameObject[] color;
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
     void SpawnEnemy(int type, int amount){
         for(int i=0;i<amount;i++){
             if(type==1) Instantiate(colorBoss,new Vector2(0,4),transform.rotation);
-            else if(type==2) Debug.Log("최종 보스"); 
+            else if(type==101) Instantiate(finalBoss,new Vector2(0,4),transform.rotation);
             else Instantiate(enemy,new Vector2(Random.Range(-5.5f,5.5f),Random.Range(-5.5f,5.5f)),transform.rotation);
         }
         enemyAmount+=amount;
@@ -114,7 +115,7 @@ public class GameManager : MonoBehaviour
         } 
         else if(roomCount==32){
             //최종 보스
-            SpawnEnemy(2,1);
+            SpawnEnemy(101,1);
         }
         else if(roomCount==33){
             //게임 종료

@@ -18,7 +18,7 @@ public class Slash : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision) {
         if(collision.gameObject.tag == "Enemy"){
             Enemy enemyScript = collision.gameObject.GetComponent<Enemy>();
-            if(enemyScript.dead) return;
+            if(enemyScript.dead||enemyScript.immune>0) return;
             enemyScript.hp -=GameManager.instance.player.GetComponent<Player>().attackPower/100*5;
             if(enemyScript.hp<=0) enemyScript.Die();
             enemyScript.StartCoroutine(enemyScript.HitColor());
