@@ -3654,6 +3654,7 @@ MonoBehaviour:
   pRigid: {fileID: 715265588}
   enemy: {fileID: 1110917707337728318, guid: 21a94b7615462094fb181a4acb9eb4c4, type: 3}
   colorBoss: {fileID: 1110917707337728318, guid: fc03114620c38124f85945fc008f622f, type: 3}
+  finalBoss: {fileID: 1110917707337728318, guid: 5800493db2043d345bb24e89b49c35d4, type: 3}
   defaultRoom: {fileID: 1547684270}
   colorRoom: {fileID: 2093044391}
   color:

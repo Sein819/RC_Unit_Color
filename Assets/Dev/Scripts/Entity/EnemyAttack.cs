@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     public ParticleSystem slashParticle;
-    public Collider2D col;
+    Collider2D col;
 
     public int type;
     public float destroyTime;
@@ -21,7 +21,7 @@ public class EnemyAttack : MonoBehaviour
             var mainModule = slashParticle.main;
             mainModule.startRotation = Mathf.Deg2Rad * transform.rotation.z;
         }
-        else if(type==1) col.enabled=false;
+        else if(type==1||type==101) col.enabled=false;
 
         Destroy(gameObject,destroyTime);
     }
@@ -31,6 +31,9 @@ public class EnemyAttack : MonoBehaviour
 
         if(type==1&&timer>0.8f&&timer<1f) col.enabled=true;
         if(type==1&&timer>=1f) col.enabled=false;
+
+        if(type==101&&timer>=1f&&timer<2f) col.enabled=true;
+        if(type==101&&timer>=2f) col.enabled=false;
     }
 
     //데미지
@@ -41,6 +44,7 @@ public class EnemyAttack : MonoBehaviour
 
             if(type==0) playerScript.hp -= 5;
             else if(type==1) playerScript.hp -= 8;
+            else if(type==101) playerScript.hp -= 10;
 
             if(playerScript.hp<=0) playerScript.Die();
             playerScript.StartCoroutine(playerScript.HitColor());
