@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2693175283924406225}
   - component: {fileID: 1391242149744736558}
   m_Layer: 0
-  m_Name: ColorBoss
+  m_Name: ColorBoss1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
