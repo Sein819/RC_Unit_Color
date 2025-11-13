@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     Player playerScript;
     public float[] rgb;
 
+    public bool redSkill1Activate;
+    int redSkill1Scale;
+
     float gameTime;
     float enemyAmount;
     int roomCount;
@@ -41,6 +44,9 @@ public class GameManager : MonoBehaviour
         gameTime=0;
         enemyAmount=0;
         roomCount=1;
+
+        redSkill1Activate=false;
+        redSkill1Scale=0;
     }
 
     void Start(){
@@ -141,7 +147,9 @@ public class GameManager : MonoBehaviour
         if(type==0){
             rgb[0]+=0.25f;
             defaultMat.SetFloat("_R",rgb[0]);
-            playerScript.attackPower+=10;
+            playerScript.attackPower+=10+redSkill1Scale*1;
+
+            if(redSkill1Activate) redSkill1Scale++;
         }
         else if(type==1){
             rgb[1]+=0.25f;

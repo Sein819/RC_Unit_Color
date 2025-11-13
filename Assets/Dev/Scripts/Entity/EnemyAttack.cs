@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
+    public Enemy enemy;
     public ParticleSystem slashParticle;
     Collider2D col;
 
@@ -42,10 +43,21 @@ public class EnemyAttack : MonoBehaviour
             Player playerScript = collision.gameObject.GetComponent<Player>();
             if(playerScript.dead) return;
 
-            if(type==0) playerScript.hp -= 5;
-            else if(type==1) playerScript.hp -= 8;
-            else if(type==101) playerScript.hp -= 10;
+            float damage;
+            if(type==1) damage = 8;
+            else if(type==101) damage = 10;
+            else damage=5;
 
+            if(playerScript.reflect){
+                if(enemy.dead||enemy.immune>0) return;
+                enemy.hp -=damage;
+                if(enemy.hp<=0) enemy.Die();
+                enemy.StartCoroutine(enemy.HitColor());
+
+                if(type!=101)return;
+            }
+
+            playerScript.hp-=damage;
             if(playerScript.hp<=0) playerScript.Die();
             playerScript.StartCoroutine(playerScript.HitColor());
         }

@@ -15,9 +15,14 @@ public class Player : MonoBehaviour
     public float hp;
     public float attackPower;
     public float attackSpeed;
+    public float moveSpeed;
     [HideInInspector]
     public bool dead;
-    
+    [HideInInspector]
+    public bool reflect;
+    [HideInInspector]
+    public bool berserkerActivate;
+
     float timer;
     float attackCd;
     float lastAttackTime;
@@ -31,7 +36,10 @@ public class Player : MonoBehaviour
         hp=maxHp;
         attackPower=100;
         attackSpeed=100;
+        moveSpeed=100;
         dead=false;
+        reflect=false;
+        berserkerActivate=false;
 
         timer=0;
         attackCd=0.7f;
@@ -57,7 +65,7 @@ public class Player : MonoBehaviour
 
         if (input.magnitude > 1f) input.Normalize();
 
-        Vector2 nextPos = input * 3 * Time.fixedDeltaTime;
+        Vector2 nextPos = input * 3 * Time.fixedDeltaTime*moveSpeed/100;
         rb.MovePosition(rb.position + nextPos);
 
         if (input != Vector2.zero){

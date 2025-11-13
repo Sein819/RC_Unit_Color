@@ -124,12 +124,15 @@ public class Enemy : MonoBehaviour
 
     //공격
     IEnumerator Attack(){
+        GameObject prefab;
+
         isAttacking=true;
         anim.SetTrigger("Attack");
         //기본 적
         if(type==0){
             yield return new WaitForSeconds(0.3f);
-            Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
+            prefab=Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
+            prefab.GetComponent<EnemyAttack>().enemy=this;
             yield return new WaitForSeconds(0.2f);
         }
         //색보스1
@@ -142,7 +145,9 @@ public class Enemy : MonoBehaviour
                 i+=Time.deltaTime*30;
             }
             Vector2 pos = GameManager.instance.player.transform.position;
-            Instantiate(attackPrefab,pos,transform.rotation);
+            prefab=Instantiate(attackPrefab,pos,transform.rotation);
+            prefab.GetComponent<EnemyAttack>().enemy=this;
+
             yield return new WaitForSeconds(0.40f);
             transform.position=pos+new Vector2(0,10);
             for(float i=0;i<10;){
@@ -156,7 +161,8 @@ public class Enemy : MonoBehaviour
         //최종 보스
         else if(type==101){
             immune+=1;
-            Instantiate(attackPrefab,GameManager.instance.player.transform.position,transform.rotation);
+            prefab=Instantiate(attackPrefab,GameManager.instance.player.transform.position,transform.rotation);
+            prefab.GetComponent<EnemyAttack>().enemy=this;
             yield return new WaitForSeconds(1f);
             immune-=1;
         }
