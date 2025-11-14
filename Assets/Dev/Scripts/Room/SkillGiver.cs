@@ -8,9 +8,11 @@ public class SkillGiver : MonoBehaviour
     public GameObject casinoUI;
     public GameObject casinoRouletteUI;
     public Button[] casinoRouletteButton;
-    public Sprite[] skillSprites; // 스킬 종류별 이미지
+    public Sprite[] skillSprites;
+    public Button[] skillButton;
 
     Player player;
+    AbilitySystem skillScript;
     Image[] casinoRouletteImage = new Image[3];
     
     public int type;
@@ -22,10 +24,12 @@ public class SkillGiver : MonoBehaviour
     
     void Start(){
         player=GameManager.instance.player.GetComponent<Player>();
+        skillScript=GameManager.instance.player.GetComponent<AbilitySystem>();
 
         casinoUI.SetActive(false);
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
+            skillButton[i].gameObject.SetActive(false);
             casinoRouletteImage[i]=casinoRouletteButton[i].gameObject.GetComponent<Image>();
         }
 
@@ -85,15 +89,16 @@ public class SkillGiver : MonoBehaviour
     }
 
     //스킬 획득
-    public void GetSkill(int type){
-        if(rouletteResults[type]==0){
-            Debug.Log("0번 스킬 획득");
-        }
-        else if(rouletteResults[type]==1){
-            Debug.Log("1번 스킬 획득");
-        }
-        else if(rouletteResults[type]==2){
-            Debug.Log("2번 스킬 획득");
+    public void SelectCasinoSkill(int type){
+        for(int i=0;i<3;i++){
+            if(player.skills[i]!=-1) continue;
+
+            player.skills[i]=rouletteResults[type];
+            Debug.Log($"{rouletteResults[type]}번 스킬 획득");
+
+            GetSkill(rouletteResults[type]);
+
+            break;
         }
 
         casinoRouletteUI.SetActive(false);
@@ -114,5 +119,52 @@ public class SkillGiver : MonoBehaviour
             }
             isUsed=true;
         }
+    }
+
+
+    //스킬 획득
+    void GetSkill(int type){
+        int button=-1;
+        for(int i=0;i<3;i++){
+            if(!skillButton[i].gameObject.activeSelf) {
+                button=i;
+                break;
+            }
+        }
+        if(button==-1){
+            Debug.Log("남아있는 스킬 버튼 없음");
+            return;
+        }
+
+        if(type==0){ //강하게 치기
+            skillScript.Red1();
+        }
+        else if(type==1){ //광전사
+            skillButton[button].onClick.AddListener(() => skillScript.Red2());
+            SetActivateSkillButton(type, button);
+        }
+        else if(type==2){ //체력회복
+            skillScript.Green1();
+        }
+        else if(type==3){ //데미지 반사
+            skillButton[button].onClick.AddListener(() => skillScript.Green2());
+            SetActivateSkillButton(type, button);
+        }
+        else if(type==4){ //한대 더 때리기
+            skillButton[button].onClick.AddListener(() => skillScript.Blue1());
+            SetActivateSkillButton(type, button);
+        }
+        else if(type==5){ //돌격
+            skillButton[button].onClick.AddListener(() => skillScript.Blue2());
+            SetActivateSkillButton(type, button);
+        }
+        else{
+            Debug.Log("스킬 획득 정의X");
+        }
+    }
+
+    void SetActivateSkillButton(int type, int button){
+        skillButton[button].gameObject.GetComponent<Image>().sprite = skillSprites[type];
+        skillButton[button].gameObject.SetActive(true);
     }
 }

@@ -24,14 +24,18 @@ public class AbilitySystem : MonoBehaviour
     float lastHealthRegenTime;
     
     void Awake(){
-        player= GameManager.instance.player.GetComponent<Player>();
+        player= gameObject.GetComponent<Player>();
     }
 
     void Start()
     {
         healthRegenActivate=false;
 
-        lastHealthRegenTime = Time.time;
+        lastHealthRegenTime = -99;
+        lastBerserkTime=-99;
+        lastReflectTime=-99;
+        lastDoubleStrikeTime=-99;
+        lastChargeTime=-99;
     }
 
     void Update()
@@ -58,13 +62,13 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 빨간색
     // ─────────────────────────────
-    //강하게 치기
+    //강하게 치기 - type 0
     public void Red1(){
         GameManager.instance.redSkill1Activate=true;
         Debug.Log("강하게 치기 패시브 적용");
     }
 
-    //광전사
+    //광전사 - type 1
     public void Red2(){ 
         if (Time.time - lastBerserkTime < berserkCooldown) return;
 
@@ -84,12 +88,12 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 초록색
     // ─────────────────────────────
-    //체력 회복
+    //체력 회복 - type 2
     public void Green1(){
         healthRegenActivate=true;
     }
 
-    //반사
+    //반사 - type 3
     public void Green2(){ 
         if (Time.time - lastReflectTime < reflectCooldown) return;
 
@@ -109,7 +113,7 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 파랑색
     // ─────────────────────────────
-    //더블 스트라이크
+    //더블 스트라이크 - type 4
     public void Blue1(){ 
         if (Time.time - lastDoubleStrikeTime < doubleStrikeCooldown) return;
 
@@ -126,11 +130,11 @@ public class AbilitySystem : MonoBehaviour
         Debug.Log("💥 한 대 더 때리기 종료");
     }
 
-    //돌격
+    //돌격 - type 5
     public void Blue2(){ 
         if (Time.time - lastChargeTime < chargeCooldown) return;
 
-        StartCoroutine(DoubleStrikeRoutine());
+        StartCoroutine(Charge());
         lastChargeTime = Time.time;
     }
 
@@ -141,5 +145,14 @@ public class AbilitySystem : MonoBehaviour
         yield return new WaitForSeconds(5f);
         player.moveSpeed-=20;
         Debug.Log("💨 돌격! 이동속도 +20% 종료");
+    }
+
+
+    //스킬 보유 검사
+    bool hasSkill(int type){
+        for(int i=0;i<4;i++){
+            if(player.skills[i]==type) return true;
+        }
+        return false;
     }
 }
