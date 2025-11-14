@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
             attackSpeed=50;
             moveSpeed=2;
             attackCd=0.7f;
-            attackRange = 0.7f;
+            attackRange = 0.8f;
         }
         hp=maxHp;
         dead=false;
