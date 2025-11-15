@@ -33,14 +33,15 @@ public class SkillGiver : MonoBehaviour
         player=GameManager.instance.player.GetComponent<Player>();
         skillScript=GameManager.instance.player.GetComponent<AbilitySystem>();
 
+        isUsed=false;
+        if(type==1) return;
+        
         casinoUI.SetActive(false);
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
             skillButton[i].gameObject.SetActive(false);
             casinoRouletteImage[i]=casinoRouletteButton[i].gameObject.GetComponent<Image>();
         }
-
-        isUsed=false;
     }
 
     void OnEnable(){
@@ -188,21 +189,6 @@ public class SkillGiver : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D collision) {
-        if(collision.gameObject.tag == "Player"&&!isUsed){
-            if(type==0){
-                //스킬 획득
-                Casino();
-            }
-            else{
-                //최종 스킬
-                Debug.Log("최종 스킬 획득");
-            }
-            isUsed=true;
-        }
-    }
-
-
     //스킬 획득
     void GetSkill(int type){
         int button=-1;
@@ -216,8 +202,7 @@ public class SkillGiver : MonoBehaviour
             Debug.LogError("남아있는 스킬 버튼 없음");
             return;
         }
-        if(type==-2){ //흑백 스킬
-            //흑백
+        if(type==-2){ //흑백
             skillButton[button].onClick.AddListener(() => skillScript.Black1());
             SetActivateSkillButton(type, button);
         }
@@ -252,5 +237,84 @@ public class SkillGiver : MonoBehaviour
         if(type==-2) skillButton[button].gameObject.GetComponent<Image>().sprite = blackSkillSprite;
         else skillButton[button].gameObject.GetComponent<Image>().sprite = skillSprites[type];
         skillButton[button].gameObject.SetActive(true);
+    }
+
+    //최종 스킬
+    void FinalSkill(){
+        int type=JudgeFinalSkillColor();
+
+        if(type==-1){ //흑백 최종
+            Debug.Log("흑백 최종 스킬 획득");
+        }
+        else if(type==0){ //빨강 최종
+            Debug.Log("빨강 최종 스킬 획득");
+        }
+        else if(type==1){ //초록 최종
+            Debug.Log("초록 최종 스킬 획득");
+        }
+        else if(type==2){ //파랑 최종
+            Debug.Log("파랑 최종 스킬 획득");
+        }
+        else if(type==3){ //노랑 최종
+            Debug.Log("노랑 최종 스킬 획득");
+        }
+        else if(type==4){ //자홍 최종
+            Debug.Log("자홍 최종 스킬 획득");
+        }
+        else if(type==5){ //청록 최종
+            Debug.Log("청록 최종 스킬 획득");
+        }
+        else if(type==6){ //흰색 최종
+            Debug.Log("흰색 최종 스킬 획득");
+        }
+    }
+
+    //최종 스킬 색 판별
+    int JudgeFinalSkillColor(){
+        float[] rgb=GameManager.instance.rgb;
+        int r=(int)(rgb[0]*5),g=(int)(rgb[1]*5),b=(int)(rgb[2]*5);
+        int[] arr = { r,g,b };
+        int max = Mathf.Max(arr);
+        int min = Mathf.Min(arr);
+        int mid = r + g + b - max - min;
+
+        if (r == 0 && g == 0 && b == 0) return -1;
+
+        // 단일색
+        if (max - mid >= 3||mid==0){
+            if (max == r) return 0; //빨
+            if (max == g) return 1; //초
+            return 2; //파
+        }
+
+        // 혼합색
+        if ((max - mid <= 2) && (mid - min >= 2||min==0)){
+            if (max == r && mid == g) return 3;  //노랑
+            if (max == r && mid == b) return 4;  //자홍
+            if (max == g && mid == b) return 5;  //청록
+        }
+
+        // 흰
+        if (max - min <= 2&&min!=0) return 6; //흰
+
+        // 기본 단일색
+        if (max == r) return 0;
+        if (max == g) return 1;
+        return 2;
+    }
+
+
+    void OnTriggerEnter2D(Collider2D collision) {
+        if(collision.gameObject.tag == "Player"&&!isUsed){
+            if(type==0){
+                //도박장
+                Casino();
+            }
+            else{
+                //최종 스킬
+                FinalSkill();
+            }
+            isUsed=true;
+        }
     }
 }
