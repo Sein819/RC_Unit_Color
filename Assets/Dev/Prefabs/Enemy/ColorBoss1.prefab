@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2209798788468275358}
   - component: {fileID: 2564597812809632600}
   - component: {fileID: 5335963409692413646}
-  - component: {fileID: 1390325801923467551}
+  - component: {fileID: 5949540579934649439}
   - component: {fileID: 2693175283924406225}
   - component: {fileID: 1391242149744736558}
   m_Layer: 0
@@ -115,7 +115,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &1390325801923467551
+--- !u!58 &5949540579934649439
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,9 +147,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.05}
+  m_Offset: {x: 0, y: 0.08}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.13
 --- !u!114 &2693175283924406225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,9 +167,9 @@ MonoBehaviour:
   type: 1
   maxHp: 0
   hp: 0
-  attackPower: 0
   attackSpeed: 0
   dead: 0
+  immune: 0
   moveSpeed: 0
   attackRange: 0
 --- !u!95 &1391242149744736558

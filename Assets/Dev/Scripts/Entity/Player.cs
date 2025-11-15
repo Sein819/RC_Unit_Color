@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     public bool reflect;
     [HideInInspector]
     public bool berserkerActivate;
+    public int[] skills;
 
     float timer;
     float attackCd;
@@ -44,6 +45,10 @@ public class Player : MonoBehaviour
         timer=0;
         attackCd=0.7f;
         lastAttackTime=-999;
+
+        for(int i=0;i<4;i++){
+            skills[i]=-1;
+        }
     }
     
     void Update(){

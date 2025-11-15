@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2209798788468275358}
   - component: {fileID: 2564597812809632600}
   - component: {fileID: 5335963409692413646}
-  - component: {fileID: 1390325801923467551}
+  - component: {fileID: 4552408842929073187}
   - component: {fileID: 2693175283924406225}
   - component: {fileID: 691662407787903857}
   m_Layer: 0
@@ -115,7 +115,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &1390325801923467551
+--- !u!58 &4552408842929073187
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,9 +147,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.04}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.08
 --- !u!114 &2693175283924406225
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,13 +164,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPrefab: {fileID: 8311448205417339434, guid: 216a3bc7c739fbc45a66fa0bde6a2d9d, type: 3}
   dieEffect: {fileID: 1857132746624371987, guid: 3effd5afdc5e828409a02c471d9f4adf, type: 3}
-  colorBoss1Attack: {fileID: 3970491398672668583, guid: ceaa1acb2dfdba545a8e773830b81c07, type: 3}
   type: 0
   maxHp: 0
   hp: 0
-  attackPower: 0
   attackSpeed: 0
   dead: 0
+  immune: 0
   moveSpeed: 2
   attackRange: 1.5
 --- !u!95 &691662407787903857
