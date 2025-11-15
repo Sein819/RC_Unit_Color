@@ -52,10 +52,10 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 흑백
     // ─────────────────────────────
-    public void Black1(GameObject targetEnemy)
+    public void Black1()
     {
         // 예시: 적을 플레이어 동료로 만들기
-        Debug.Log($"{targetEnemy.name}이(가) 플레이어의 동료가 되었습니다!");
+        Debug.Log($"흑백 스킬 발동!");
         // 실제로는 targetEnemy의 AI, 팀 정보 수정 필요
     }
 

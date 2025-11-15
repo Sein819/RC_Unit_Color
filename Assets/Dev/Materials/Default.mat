@@ -55,9 +55,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _B: 0
-    - _G: 0.5
+    - _G: 0
     - _IsDamaged: 0
-    - _R: 0.25
+    - _R: 0
     m_Colors:
     - _Vector3: {r: 0.3, g: 0.59, b: 0.11, a: 0}
   m_BuildTextureStacks: []

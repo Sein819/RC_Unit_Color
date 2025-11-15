@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class SkillGiver : MonoBehaviour
 {
@@ -9,7 +10,12 @@ public class SkillGiver : MonoBehaviour
     public GameObject casinoRouletteUI;
     public Button[] casinoRouletteButton;
     public Sprite[] skillSprites;
+    public int[] typeOfRedSkill;
+    public int[] typeOfGreenSkill;
+    public int[] typeOfBlueSkill;
     public Button[] skillButton;
+    public Sprite nothingSkillSprite;
+    public Sprite blackSkillSprite;
 
     Player player;
     AbilitySystem skillScript;
@@ -20,6 +26,7 @@ public class SkillGiver : MonoBehaviour
     public float spinDuration = 2f;
 
     bool isUsed;
+    public List<int> skillOfColor=new List<int>(); //룰렛에 나올 수 있는 모든 스킬 타입 리스트
     int[] rouletteResults;
     
     void Start(){
@@ -61,10 +68,39 @@ public class SkillGiver : MonoBehaviour
 
     IEnumerator RouletteCoroutine(){
         float elapsed = 0f;
+        float[] rgb = GameManager.instance.rgb;
+        float sum=rgb[0]+rgb[1]+rgb[2];
+        
+        //색 스킬 추출, 이미 있는 능력 제외
+        skillOfColor.Clear();
+        skillOfColor.Add(-1);
+        if(sum==0&&Array.IndexOf(player.skills, -2)==-1) skillOfColor.Add(-2);
+        else{
+            for(int i=0; i<skillSprites.Length;i++){
+                if(-1!=Array.IndexOf(player.skills, i)) continue;
+
+                if(-1!=Array.IndexOf(typeOfRedSkill,i)&&rgb[0]==0) continue;
+                else if(-1!=Array.IndexOf(typeOfGreenSkill,i)&&rgb[1]==0) continue;
+                else if(-1!=Array.IndexOf(typeOfBlueSkill,i)&&rgb[2]==0) continue;
+
+                skillOfColor.Add(i);
+            }
+        }
+
+        //룰렛 연출
         while (elapsed < spinDuration){
             for (int i = 0; i < 3; i++){
-                int rand = Random.Range(0, skillSprites.Length);
-                casinoRouletteImage[i].sprite = skillSprites[rand];
+                int type=ShowRouletteRandomSkill(sum,rgb);
+
+                if(type==-1){
+                    casinoRouletteImage[i].sprite=nothingSkillSprite;
+                    continue;
+                }
+                else if(type==-2){
+                    casinoRouletteImage[i].sprite=blackSkillSprite;
+                    continue;
+                }
+                casinoRouletteImage[i].sprite = skillSprites[type];
             }
             elapsed += spinSpeed;
             yield return new WaitForSeconds(spinSpeed);
@@ -72,23 +108,60 @@ public class SkillGiver : MonoBehaviour
 
         //랜덤 결과 확정
         rouletteResults = new int[3];
-        for (int i = 0; i < 3; i++){
-            rouletteResults[i] = Random.Range(0, skillSprites.Length);
+        for (int i = 0; i < 3;i++){
+            int type=ShowRouletteRandomSkill(sum,rgb);
+            rouletteResults[i] = type;
+            if(type!=-1) skillOfColor.Remove(type);
         }
 
         //순차 멈춤
         for (int i = 0; i < 3; i++){
             yield return new WaitForSeconds(0.5f);
             int result = rouletteResults[i];
+
+            if(result==-1) {
+                casinoRouletteImage[i].sprite=nothingSkillSprite;
+                continue;
+            }
+            else if(result==-2){
+                casinoRouletteImage[i].sprite=blackSkillSprite;
+                continue;
+            }
             casinoRouletteImage[i].sprite = skillSprites[result];
         }
 
         for (int i = 0; i < 3; i++){
-            casinoRouletteButton[i].interactable = true;
+            if(rouletteResults[i]!=-1) casinoRouletteButton[i].interactable = true;
         }
     }
 
-    //스킬 획득
+    //도박장 - 스킬 랜덤 출력
+    int ShowRouletteRandomSkill(float sum, float[] rgb){
+        if(sum == 0&&skillOfColor.Contains(-2)){
+            if(UnityEngine.Random.Range(0, 10)==0) return -2;
+            else return -1;
+        }
+        
+        int resultType;
+        do{
+            if(UnityEngine.Random.Range(0, 10)==0){
+                resultType=-1;
+                break;
+            }
+            float randomValue = UnityEngine.Random.Range(0f, sum);
+
+            if (randomValue < rgb[0]) resultType=typeOfRedSkill[UnityEngine.Random.Range(0,typeOfRedSkill.Length)];
+            else{
+                randomValue -= rgb[0];
+                if (randomValue < rgb[1]) resultType=typeOfGreenSkill[UnityEngine.Random.Range(0,typeOfGreenSkill.Length)];
+                else resultType=typeOfBlueSkill[UnityEngine.Random.Range(0,typeOfBlueSkill.Length)];
+            }
+        }while(!skillOfColor.Contains(resultType));
+
+        return resultType;
+    }
+
+    //도박장 - 스킬 선택
     public void SelectCasinoSkill(int type){
         for(int i=0;i<3;i++){
             if(player.skills[i]!=-1) continue;
@@ -101,6 +174,14 @@ public class SkillGiver : MonoBehaviour
             break;
         }
 
+        casinoRouletteUI.SetActive(false);
+        for(int i=0;i<3;i++){
+            casinoRouletteButton[i].interactable=false;
+        }
+    }
+
+    //도박장 - 스킬 선택 스킵
+    public void CasinoSkipSkillSelect(){
         casinoRouletteUI.SetActive(false);
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
@@ -132,11 +213,15 @@ public class SkillGiver : MonoBehaviour
             }
         }
         if(button==-1){
-            Debug.Log("남아있는 스킬 버튼 없음");
+            Debug.LogError("남아있는 스킬 버튼 없음");
             return;
         }
-
-        if(type==0){ //강하게 치기
+        if(type==-2){ //흑백 스킬
+            //흑백
+            skillButton[button].onClick.AddListener(() => skillScript.Black1());
+            SetActivateSkillButton(type, button);
+        }
+        else if(type==0){ //강하게 치기
             skillScript.Red1();
         }
         else if(type==1){ //광전사
@@ -159,12 +244,13 @@ public class SkillGiver : MonoBehaviour
             SetActivateSkillButton(type, button);
         }
         else{
-            Debug.Log("스킬 획득 정의X");
+            Debug.LogError("스킬 획득 정의X");
         }
     }
 
     void SetActivateSkillButton(int type, int button){
-        skillButton[button].gameObject.GetComponent<Image>().sprite = skillSprites[type];
+        if(type==-2) skillButton[button].gameObject.GetComponent<Image>().sprite = blackSkillSprite;
+        else skillButton[button].gameObject.GetComponent<Image>().sprite = skillSprites[type];
         skillButton[button].gameObject.SetActive(true);
     }
 }
