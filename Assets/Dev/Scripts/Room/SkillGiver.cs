@@ -50,6 +50,7 @@ public class SkillGiver : MonoBehaviour
 
     //도박장 창 활성화
     public void Casino(){
+        player.isCasino=true;
         casinoUI.SetActive(true);
     }
 
@@ -57,12 +58,16 @@ public class SkillGiver : MonoBehaviour
     public void CasinoHeal(){
         player.hp = Mathf.Min(player.hp + player.maxHp*0.2f, player.maxHp);
         casinoUI.SetActive(false);
+        player.isCasino=false;
     }
 
     //도박장 - 스킬 획득 버튼
     public void CasinoRoulette(){
         casinoUI.SetActive(false);
         casinoRouletteUI.SetActive(true);
+        for(int i=0;i<3;i++){
+            casinoRouletteButton[i].interactable=false;
+        }
 
         StartCoroutine(RouletteCoroutine());
     }
@@ -179,6 +184,7 @@ public class SkillGiver : MonoBehaviour
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
         }
+        player.isCasino=false;
     }
 
     //도박장 - 스킬 선택 스킵
@@ -187,6 +193,7 @@ public class SkillGiver : MonoBehaviour
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
         }
+        player.isCasino=false;
     }
 
     //스킬 획득
