@@ -63,6 +63,9 @@ public class SkillGiver : MonoBehaviour
     public void CasinoRoulette(){
         casinoUI.SetActive(false);
         casinoRouletteUI.SetActive(true);
+        for(int i=0;i<3;i++){
+            casinoRouletteButton[i].interactable=false;
+        }
 
         StartCoroutine(RouletteCoroutine());
     }

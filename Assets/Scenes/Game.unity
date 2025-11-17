@@ -1381,8 +1381,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: -1050}
-  m_SizeDelta: {x: 150, y: 150}
+  m_AnchoredPosition: {x: -325, y: -1050}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &486775745
 MonoBehaviour:
@@ -2639,7 +2639,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -1050}
-  m_SizeDelta: {x: 150, y: 150}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1002565733
 MonoBehaviour:
@@ -3566,8 +3566,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 990088994}
   - {fileID: 407935205}
+  - {fileID: 990088994}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5414,12 +5414,12 @@ MonoBehaviour:
   - {fileID: 1774679348}
   - {fileID: 1716641710}
   skillSprites:
-  - {fileID: 21300000, guid: d2ddd27a2c7de4ad99b3d8c9d00e4265, type: 3}
-  - {fileID: 21300000, guid: cc7e65fd16d39483aa18d865a68e9451, type: 3}
-  - {fileID: 21300000, guid: 3492e9eb6292141eb942d0c9beface29, type: 3}
-  - {fileID: 21300000, guid: 817a8eafcec5342d0a520cb1f23c1ea4, type: 3}
-  - {fileID: 21300000, guid: 63a9bd0d002bb4d598c276d9f5aabc30, type: 3}
-  - {fileID: 21300000, guid: 2fe54232a3d87784e804d41060f1cd8e, type: 3}
+  - {fileID: 1053154442, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
+  - {fileID: 989445552, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
+  - {fileID: 996940505, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
+  - {fileID: -1936119077, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
+  - {fileID: 528018756, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
+  - {fileID: -854584801, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
   typeOfRedSkill: 0000000001000000
   typeOfGreenSkill: 0200000003000000
   typeOfBlueSkill: 0400000005000000
@@ -5428,7 +5428,7 @@ MonoBehaviour:
   - {fileID: 1002565735}
   - {fileID: 1762878021}
   nothingSkillSprite: {fileID: 21300000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
-  blackSkillSprite: {fileID: -1427376195, guid: ed4fcb3f0d514bc4dadad8f6012047be, type: 3}
+  blackSkillSprite: {fileID: -566433977, guid: 977538e34f357cf4fb2003d4703b1f42, type: 3}
   type: 0
   spinSpeed: 0.05
   spinDuration: 2
@@ -5581,8 +5581,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: -1050}
-  m_SizeDelta: {x: 150, y: 150}
+  m_AnchoredPosition: {x: 325, y: -1050}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1762878019
 MonoBehaviour:
@@ -5726,7 +5726,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
