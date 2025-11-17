@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     float timer;
     float attackCd;
     float lastAttackTime;
+    float lastTapTime = 0f;
 
     void Awake(){
         rb = GetComponent<Rigidbody2D>();
@@ -56,6 +57,9 @@ public class Player : MonoBehaviour
     
     void Update(){
         timer+=Time.deltaTime;
+
+        if(dead||isCasino) return;
+        ActivateFianlSkill();
     }
 
     void FixedUpdate(){
@@ -108,9 +112,37 @@ public class Player : MonoBehaviour
         sr.SetPropertyBlock(mpb);
     }
 
+    //사망
     public void Die(){
         dead=true;
         //사망 애니메이션
         StartCoroutine(GameManager.instance.GameOver());
+    }
+
+    
+    //최종 스킬 발동
+    void ActivateFianlSkill(){
+        if (Input.touchCount > 0){
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began){
+                if (Time.time - lastTapTime < 0.2f){
+                    UseFinalSkill();
+                }
+                lastTapTime = Time.time;
+            }
+        }
+        else{
+            if (Input.GetMouseButtonDown(0)){
+                if (Time.time - lastTapTime < 0.2f){
+                    UseFinalSkill();
+                }
+                lastTapTime = Time.time;
+            }
+        }
+    }
+
+    void UseFinalSkill(){
+        Debug.Log("더블터치 스킬 발동!");
     }
 }
