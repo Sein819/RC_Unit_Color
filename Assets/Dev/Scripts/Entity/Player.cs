@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public bool berserkerActivate;
     public int[] skills;
+    [HideInInspector]
+    public bool isCasino;
 
     float timer;
     float attackCd;
@@ -41,6 +43,7 @@ public class Player : MonoBehaviour
         dead=false;
         reflect=false;
         berserkerActivate=false;
+        isCasino=false;
 
         timer=0;
         attackCd=0.7f;
@@ -56,7 +59,7 @@ public class Player : MonoBehaviour
     }
 
     void FixedUpdate(){
-        if(dead) return;
+        if(dead||isCasino) return;
 
         Move();
     }
