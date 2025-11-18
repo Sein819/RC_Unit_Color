@@ -16,6 +16,8 @@ public class SkillGiver : MonoBehaviour
     public Button[] skillButton;
     public Sprite nothingSkillSprite;
     public Sprite blackSkillSprite;
+    public GameObject finalSkillEffect;
+    public GameObject healEffect;
 
     Player player;
     AbilitySystem skillScript;
@@ -36,6 +38,7 @@ public class SkillGiver : MonoBehaviour
         isUsed=false;
         if(type==1) return;
         
+        healEffect.SetActive(false);
         casinoUI.SetActive(false);
         for(int i=0;i<3;i++){
             casinoRouletteButton[i].interactable=false;
@@ -59,6 +62,13 @@ public class SkillGiver : MonoBehaviour
         player.hp = Mathf.Min(player.hp + player.maxHp*0.2f, player.maxHp);
         casinoUI.SetActive(false);
         player.isCasino=false;
+        StartCoroutine(ActivateHealEffect());
+    }
+
+    IEnumerator ActivateHealEffect(){
+        healEffect.SetActive(true);
+        yield return new WaitForSeconds(2.2f);
+        healEffect.SetActive(false);
     }
 
     //도박장 - 스킬 획득 버튼
@@ -73,7 +83,6 @@ public class SkillGiver : MonoBehaviour
     }
 
     IEnumerator RouletteCoroutine(){
-        float elapsed = 0f;
         float[] rgb = GameManager.instance.rgb;
         float sum=rgb[0]+rgb[1]+rgb[2];
         
@@ -93,36 +102,24 @@ public class SkillGiver : MonoBehaviour
             }
         }
 
-        //룰렛 연출
-        while (elapsed < spinDuration){
-            for (int i = 0; i < 3; i++){
-                int type=ShowRouletteRandomSkill(sum,rgb);
-
-                if(type==-1){
-                    casinoRouletteImage[i].sprite=nothingSkillSprite;
-                    continue;
-                }
-                else if(type==-2){
-                    casinoRouletteImage[i].sprite=blackSkillSprite;
-                    continue;
-                }
-                casinoRouletteImage[i].sprite = skillSprites[type];
-            }
-            elapsed += spinSpeed;
-            yield return new WaitForSeconds(spinSpeed);
+        for(int i=0;i<3;i++){
+            slotStop[i] = false;
+            StartCoroutine(SlotSpinCoroutine(i, sum, rgb));
         }
+
+        yield return new WaitForSeconds(spinDuration);
 
         //랜덤 결과 확정
         rouletteResults = new int[3];
         for (int i = 0; i < 3;i++){
             int type=ShowRouletteRandomSkill(sum,rgb);
             rouletteResults[i] = type;
-            if(type!=-1) skillOfColor.Remove(type);
         }
 
         //순차 멈춤
         for (int i = 0; i < 3; i++){
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.7f);
+            slotStop[i] = true;
             int result = rouletteResults[i];
 
             if(result==-1) {
@@ -138,6 +135,27 @@ public class SkillGiver : MonoBehaviour
 
         for (int i = 0; i < 3; i++){
             if(rouletteResults[i]!=-1) casinoRouletteButton[i].interactable = true;
+        }
+    }
+
+    bool[] slotStop = new bool[3];
+
+    //룰렛 연출
+    IEnumerator SlotSpinCoroutine(int index, float sum, float[] rgb){
+        while(!slotStop[index]){
+            int type = ShowRouletteRandomSkill(sum, rgb);
+
+            if(type == -1){
+                casinoRouletteImage[index].sprite = nothingSkillSprite;
+            }
+            else if(type == -2){
+                casinoRouletteImage[index].sprite = blackSkillSprite;
+            }
+            else{
+                casinoRouletteImage[index].sprite = skillSprites[type];
+            }
+
+            yield return new WaitForSeconds(spinSpeed);
         }
     }
 
@@ -246,6 +264,20 @@ public class SkillGiver : MonoBehaviour
         skillButton[button].gameObject.SetActive(true);
     }
 
+    //최종 스킬 이펙트
+    IEnumerator FianlSkillEffect(){
+        player.isCasino=true;
+        GameObject prefab = Instantiate(finalSkillEffect,transform.position+new Vector3(0,6,0),transform.rotation);
+        for(float i=0;i<6;){
+            prefab.transform.position-=new Vector3(0,Time.deltaTime,0);
+            yield return null;
+            i+=Time.deltaTime;
+        }
+        FinalSkill();
+        Destroy(prefab);
+        player.isCasino=false;
+    }
+
     //최종 스킬
     void FinalSkill(){
         int type=JudgeFinalSkillColor();
@@ -319,7 +351,7 @@ public class SkillGiver : MonoBehaviour
             }
             else{
                 //최종 스킬
-                FinalSkill();
+                StartCoroutine(FianlSkillEffect());
             }
             isUsed=true;
         }

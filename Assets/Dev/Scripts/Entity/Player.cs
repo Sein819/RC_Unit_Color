@@ -73,25 +73,30 @@ public class Player : MonoBehaviour
         float h = joy.Horizontal;
         float v = joy.Vertical;
 
+        float kh = Input.GetAxisRaw("Horizontal");
+        float kv = Input.GetAxisRaw("Vertical");
+
+        if (Mathf.Abs(kh) > Mathf.Abs(h)) h = kh;
+        if (Mathf.Abs(kv) > Mathf.Abs(v)) v = kv;
+
         Vector2 input = new Vector2(h, v);
+        input = input.normalized;
 
-        if (input.magnitude > 1f) input.Normalize();
-
-        Vector2 nextPos = input * 3 * Time.fixedDeltaTime*moveSpeed/100;
+        Vector2 nextPos = input * 3 * Time.fixedDeltaTime * moveSpeed / 100;
         rb.MovePosition(rb.position + nextPos);
 
         if (input != Vector2.zero){
-            if(input.x>0) sr.flipX = false;
-            else if(input.x<0) sr.flipX = true;
+            if(input.x > 0) sr.flipX = false;
+            else if(input.x < 0) sr.flipX = true;
 
             Transform direction = transform.Find("PlayerDirection");
             float targetAngle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.Euler(0, 0, targetAngle);
             direction.rotation = Quaternion.Lerp(direction.rotation, targetRotation, Time.fixedDeltaTime * 15);
         }
-        else if(timer>lastAttackTime+attackCd/attackSpeed*100){
+        else if(timer > lastAttackTime + attackCd / attackSpeed * 100){
             Attack();
-            lastAttackTime=timer;
+            lastAttackTime = timer;
         }
     }
 
