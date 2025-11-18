@@ -155,6 +155,7 @@ public class GameManager : MonoBehaviour
             rgb[1]+=0.25f;
             defaultMat.SetFloat("_G",rgb[1]);
             playerScript.maxHp+=10;
+            playerScript.hp*=playerScript.maxHp/(playerScript.maxHp-10);
         }
         else{
             rgb[2]+=0.25f;
