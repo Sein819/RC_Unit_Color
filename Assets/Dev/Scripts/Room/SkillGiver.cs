@@ -16,6 +16,7 @@ public class SkillGiver : MonoBehaviour
     public Button[] skillButton;
     public Sprite nothingSkillSprite;
     public Sprite blackSkillSprite;
+    public GameObject finalSkillEffect;
 
     Player player;
     AbilitySystem skillScript;
@@ -246,6 +247,20 @@ public class SkillGiver : MonoBehaviour
         skillButton[button].gameObject.SetActive(true);
     }
 
+    //최종 스킬 이펙트
+    IEnumerator FianlSkillEffect(){
+        player.isCasino=true;
+        GameObject prefab = Instantiate(finalSkillEffect,transform.position+new Vector3(0,6,0),transform.rotation);
+        for(float i=0;i<6;){
+            prefab.transform.position-=new Vector3(0,Time.deltaTime,0);
+            yield return null;
+            i+=Time.deltaTime;
+        }
+        FinalSkill();
+        Destroy(prefab);
+        player.isCasino=false;
+    }
+
     //최종 스킬
     void FinalSkill(){
         int type=JudgeFinalSkillColor();
@@ -319,7 +334,7 @@ public class SkillGiver : MonoBehaviour
             }
             else{
                 //최종 스킬
-                FinalSkill();
+                StartCoroutine(FianlSkillEffect());
             }
             isUsed=true;
         }
