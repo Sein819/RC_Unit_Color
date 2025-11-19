@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
 
     public bool redSkill1Activate;
     int redSkill1Scale;
+    [HideInInspector]
+    public bool slowEnemy;
 
     float gameTime;
     float enemyAmount;
@@ -47,6 +49,7 @@ public class GameManager : MonoBehaviour
 
         redSkill1Activate=false;
         redSkill1Scale=0;
+        slowEnemy=false;
     }
 
     void Start(){

@@ -25,6 +25,9 @@ public class Player : MonoBehaviour
     public int[] skills;
     [HideInInspector]
     public bool isCasino;
+    [HideInInspector]
+    public bool redFinalActive;
+    public int finalSkillType;
 
     float timer;
     float attackCd;
@@ -45,6 +48,8 @@ public class Player : MonoBehaviour
         reflect=false;
         berserkerActivate=false;
         isCasino=false;
+        redFinalActive=false;
+        finalSkillType=-999;
 
         timer=0;
         attackCd=0.7f;
@@ -103,7 +108,11 @@ public class Player : MonoBehaviour
     //공격
     void Attack(){
         //공격 애니메이션
-        Instantiate(slash,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
+        GameObject prefab = Instantiate(slash,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
+        if(redFinalActive){
+            prefab.GetComponent<Slash>().redFinalActive = true;
+            redFinalActive=false;
+        }
     }
 
     //피해 입기
@@ -119,8 +128,13 @@ public class Player : MonoBehaviour
 
     //사망
     public void Die(){
-        dead=true;
         //사망 애니메이션
+        AbilitySystem skill = gameObject.GetComponent<AbilitySystem>();
+        if(skill.revive){
+            skill.Revive();
+            return;
+        }
+        dead=true;
         StartCoroutine(GameManager.instance.GameOver());
     }
 
@@ -148,6 +162,32 @@ public class Player : MonoBehaviour
     }
 
     void UseFinalSkill(){
-        Debug.Log("더블터치 스킬 발동!");
+        AbilitySystem skill = gameObject.GetComponent<AbilitySystem>();
+
+        if(finalSkillType==-1){ //흑백 최종
+            Debug.Log("흑백 최종 스킬 발동");
+        }
+        else if(finalSkillType==0){ //빨강 최종
+            skill.Red3();
+            Debug.Log("빨강 최종 스킬 발동");
+        }
+        // else if(finalSkillType==1){ //초록 최종
+        //     Debug.Log("초록 최종 스킬 발동");
+        // }
+        // else if(finalSkillType==2){ //파랑 최종
+        //     Debug.Log("파랑 최종 스킬 발동");
+        // }
+        else if(finalSkillType==3){ //노랑 최종
+            Debug.Log("노랑 최종 스킬 발동");
+        }
+        else if(finalSkillType==4){ //자홍 최종
+            Debug.Log("자홍 최종 스킬 발동");
+        }
+        else if(finalSkillType==5){ //청록 최종
+            Debug.Log("청록 최종 스킬 발동");
+        }
+        else if(finalSkillType==6){ //흰색 최종
+            Debug.Log("흰색 최종 스킬 발동");
+        }
     }
 }

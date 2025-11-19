@@ -64,6 +64,8 @@ public class Enemy : MonoBehaviour
         hp=maxHp;
         dead=false;
 
+        if(GameManager.instance.slowEnemy) moveSpeed*=0.7f;
+
         timer=0;
         lastAttackTime=-999;
         isRunning=false;

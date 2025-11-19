@@ -280,7 +280,9 @@ public class SkillGiver : MonoBehaviour
 
     //최종 스킬
     void FinalSkill(){
+        AbilitySystem skill = GameManager.instance.player.GetComponent<AbilitySystem>();
         int type=JudgeFinalSkillColor();
+        player.finalSkillType=type;
 
         if(type==-1){ //흑백 최종
             Debug.Log("흑백 최종 스킬 획득");
@@ -290,9 +292,11 @@ public class SkillGiver : MonoBehaviour
         }
         else if(type==1){ //초록 최종
             Debug.Log("초록 최종 스킬 획득");
+            skill.Green3();
         }
         else if(type==2){ //파랑 최종
             Debug.Log("파랑 최종 스킬 획득");
+            skill.Blue3();
         }
         else if(type==3){ //노랑 최종
             Debug.Log("노랑 최종 스킬 획득");

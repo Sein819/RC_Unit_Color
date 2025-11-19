@@ -6,6 +6,9 @@ public class Slash : MonoBehaviour
 {
     public ParticleSystem slashParticle;
     Player player;
+    
+    [HideInInspector]
+    public bool redFinalActive=false;
 
     void Awake(){
         player=GameManager.instance.player.GetComponent<Player>();
@@ -24,7 +27,7 @@ public class Slash : MonoBehaviour
         if(collision.gameObject.tag == "Enemy"){
             Enemy enemyScript = collision.gameObject.GetComponent<Enemy>();
             if(enemyScript.dead||enemyScript.immune>0) return;
-            enemyScript.hp -=player.attackPower/100*5*(player.berserkerActivate?1.5f:1);
+            enemyScript.hp -=player.attackPower/100*5*(player.berserkerActivate?1.5f:1)*(redFinalActive?2:1);
             if(enemyScript.hp<=0) enemyScript.Die();
             enemyScript.StartCoroutine(enemyScript.HitColor());
         }
