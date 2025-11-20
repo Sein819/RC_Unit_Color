@@ -177,9 +177,12 @@ public class AbilitySystem : MonoBehaviour
         lastDoubleStrikeTime = Time.time;
     }
 
+    public GameObject attackSpeedEffect;
+
     private IEnumerator DoubleStrikeRoutine()
     {
         player.attackSpeed += 50;
+        Instantiate(attackSpeedEffect, transform.position, transform.rotation);
         Debug.Log("💥 공격속도 +50% (5초간)");
 
         yield return new WaitForSeconds(5f);
