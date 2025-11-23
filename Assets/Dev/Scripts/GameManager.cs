@@ -10,19 +10,21 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject player;
     public Rigidbody2D pRigid;
-    public GameObject enemy;
+    public GameObject[] enemy;
     public GameObject colorBoss;
     public GameObject finalBoss;
     public GameObject defaultRoom;
     public GameObject colorRoom;
     public GameObject[] color;
     public Material defaultMat;
+    public Material enemyMat;
     public GameObject casino;
     public GameObject finalSkillGiver;
 
     Player playerScript;
     public float[] rgb;
 
+    [HideInInspector]
     public bool redSkill1Activate;
     int redSkill1Scale;
     [HideInInspector]
@@ -62,6 +64,9 @@ public class GameManager : MonoBehaviour
         defaultMat.SetFloat("_R",0);
         defaultMat.SetFloat("_G",0);
         defaultMat.SetFloat("_B",0);
+        enemyMat.SetFloat("_R",0);
+        enemyMat.SetFloat("_G",0);
+        enemyMat.SetFloat("_B",0);
 
         SpawnEnemy(0,5+roomCount/3);
     }
@@ -75,7 +80,7 @@ public class GameManager : MonoBehaviour
         for(int i=0;i<amount;i++){
             if(type==1) Instantiate(colorBoss,new Vector2(0,4),transform.rotation);
             else if(type==101) Instantiate(finalBoss,new Vector2(0,4),transform.rotation);
-            else Instantiate(enemy,new Vector2(Random.Range(-5.5f,5.5f),Random.Range(-5.5f,5.5f)),transform.rotation);
+            else Instantiate(enemy[Random.Range(0,enemy.Length)],new Vector2(Random.Range(-5.5f,5.5f),Random.Range(-5.5f,5.5f)),transform.rotation);
         }
         enemyAmount+=amount;
     }
@@ -150,20 +155,23 @@ public class GameManager : MonoBehaviour
         if(type==0){
             rgb[0]+=0.25f;
             defaultMat.SetFloat("_R",rgb[0]);
-            playerScript.attackPower+=10+redSkill1Scale*1;
+            enemyMat.SetFloat("_R",rgb[0]);
+            playerScript.attackPower+=20+redSkill1Scale*2;
 
             if(redSkill1Activate) redSkill1Scale++;
         }
         else if(type==1){
             rgb[1]+=0.25f;
             defaultMat.SetFloat("_G",rgb[1]);
-            playerScript.maxHp+=10;
-            playerScript.hp*=playerScript.maxHp/(playerScript.maxHp-10);
+            enemyMat.SetFloat("_G",rgb[1]);
+            playerScript.maxHp+=20;
+            playerScript.hp*=playerScript.maxHp/(playerScript.maxHp-20);
         }
         else{
             rgb[2]+=0.25f;
             defaultMat.SetFloat("_B",rgb[2]);
-            playerScript.attackSpeed+=10;
+            enemyMat.SetFloat("_B",rgb[2]);
+            playerScript.attackSpeed+=20;
         }
     }
 
