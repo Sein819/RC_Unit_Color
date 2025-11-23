@@ -13,6 +13,8 @@ public class Enemy : MonoBehaviour
     Animator anim;
     Collider2D col;
 
+    public Transform firePoint;  // 투사체 발사 위치
+    public GameObject projectilePrefab; // 발사할 투사체
     public int type;
     public float maxHp;
     public float hp;
@@ -47,18 +49,26 @@ public class Enemy : MonoBehaviour
             attackCd=4f;
             attackRange = 0.7f;
         }
+        else if (type == 2)
+        {
+            maxHp = 8;         
+            attackSpeed = 100;
+            moveSpeed = 1.5f;  
+            attackCd = 2f;     
+            attackRange = 5f;    
+        }
         else if(type==101){
-            maxHp=200;
+            maxHp=300;
             attackSpeed=100;
             moveSpeed=1.5f;
             attackCd=3f;
             attackRange = 3.5f;
         }
-        else{
-            maxHp=10;
-            attackSpeed=50;
-            moveSpeed=2;
-            attackCd=0.7f;
+        else if (type == 0){
+            maxHp = 13;
+            attackSpeed = 50;
+            moveSpeed = 2;
+            attackCd = 0.7f;
             attackRange = 0.8f;
         }
         hp=maxHp;
@@ -76,10 +86,10 @@ public class Enemy : MonoBehaviour
     void Update(){
         if (dead) return;
         timer += Time.deltaTime;
-        if(type!=1&&type!=101) anim.SetBool("IsRunning", isRunning);
+        if(type!=1&&type!=2&&type!=101) anim.SetBool("IsRunning", isRunning);
 
 
-        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && (type==1||type==101)){
+        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && (type == 1 || type == 101)){
             StartCoroutine(Attack());
             lastAttackTime = timer+Random.Range(0f,1.5f);
         }
@@ -92,11 +102,50 @@ public class Enemy : MonoBehaviour
 
     //이동
     void Move(){
+        // 원거리 적 이동
         Transform player = GameManager.instance.player.transform;
         // 플레이어까지의 거리 계산
         float distance = Vector2.Distance(transform.position, player.transform.position);
+        if (type == 2)
+        {
+            float safeDistance = attackRange;  // 플레이어가 너무 가까우면 도망
+            if (isAttacking) //공격 중 중지
+            {
+                isRunning = false;
+                return;
+            }
+            // 플레이어가 너무 가까우면 반대 방향으로 이동
+            if (distance < safeDistance / 1.5f)
+            {
+                if(isAttacking) return;
 
-        if(type!=1){
+                Vector2 dir = (transform.position - player.position).normalized;
+                rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
+                isRunning = true;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100){
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
+            }
+            else if (distance <= safeDistance)
+            {
+                isRunning = false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100){
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
+            }
+            else
+            {
+                if(isAttacking) return;
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+                isRunning=true;
+            }
+            sr.flipX = player.position.x < transform.position.x;
+            return;
+        }
+        else if (type == 0 || type == 101){ //근거리 전용 이동
             if(type==101&&isAttacking) return;
             // 공격 범위 밖이면 플레이어 쪽으로 이동
             if (distance > attackRange)
@@ -129,13 +178,27 @@ public class Enemy : MonoBehaviour
         GameObject prefab;
 
         isAttacking=true;
-        anim.SetTrigger("Attack");
+        if(type!=2)anim.SetTrigger("Attack");
         //기본 적
         if(type==0){
             yield return new WaitForSeconds(0.3f);
             prefab=Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
             prefab.GetComponent<EnemyAttack>().enemy=this;
             yield return new WaitForSeconds(0.2f);
+        }
+        // 원거리 적
+        else if (type == 2)
+        {
+            isAttacking = true;
+            yield return new WaitForSeconds(0.5f); // 공격 모션 대기
+
+            // 1발째 발사
+            GameObject p = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+            p.GetComponent<arrow>().enemy=this;
+            yield return new WaitForSeconds(0.3f);
+
+
+            isAttacking = false;
         }
         //색보스1
         else if(type==1){

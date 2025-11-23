@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
 
-        maxHp=100;
+        maxHp=150;
         hp=maxHp;
         attackPower=100;
         attackSpeed=100;

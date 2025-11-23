@@ -55,7 +55,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _B: 0
-    - _G: 0.25
+    - _G: 0
     - _IsDamaged: 0
     - _R: 0
     m_Colors:
