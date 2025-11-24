@@ -53,7 +53,7 @@ public class Enemy : MonoBehaviour
         {
             maxHp = 8;         
             attackSpeed = 100;
-            moveSpeed = 1.5f;  
+            moveSpeed = 1.35f;  
             attackCd = 2f;     
             attackRange = 5f;    
         }
@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour
                 isRunning = true;
                 if (timer > lastAttackTime + attackCd / attackSpeed * 100){
                     StartCoroutine(Attack());
-                    lastAttackTime = timer;
+                    lastAttackTime = timer+Random.Range(0,2f);
                 }
             }
             else if (distance <= safeDistance)
@@ -132,7 +132,7 @@ public class Enemy : MonoBehaviour
                 isRunning = false;
                 if (timer > lastAttackTime + attackCd / attackSpeed * 100){
                     StartCoroutine(Attack());
-                    lastAttackTime = timer;
+                    lastAttackTime = timer+Random.Range(0,2f);
                 }
             }
             else
