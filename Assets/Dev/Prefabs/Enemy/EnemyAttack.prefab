@@ -4967,6 +4967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ce2cfabb03ec14aac98ecdc94f6686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slashParticle: {fileID: 7264431864591096096}
+  enemy: {fileID: 0}
+  particle: {fileID: 7264431864591096096}
   type: 0
   destroyTime: 0.2

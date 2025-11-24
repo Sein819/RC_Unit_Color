@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
     public GameObject attackPrefab;
     public GameObject dieEffect;
+    public GameObject[] finalBossAttack;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
@@ -225,11 +226,17 @@ public class Enemy : MonoBehaviour
         }
         //최종 보스
         else if(type==101){
-            immune+=1;
-            prefab=Instantiate(attackPrefab,GameManager.instance.player.transform.position,transform.rotation);
-            prefab.GetComponent<EnemyAttack>().enemy=this;
-            yield return new WaitForSeconds(1f);
-            immune-=1;
+            int randomSkill=Random.Range(1,3);
+            if(randomSkill==1){
+                prefab=Instantiate(finalBossAttack[0],GameManager.instance.player.transform.position,transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
+                yield return new WaitForSeconds(1f);
+            }
+            else{
+                prefab=Instantiate(finalBossAttack[1],transform.position+new Vector3(0,1,0),transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
+                yield return new WaitForSeconds(1f);
+            }
         }
         isAttacking=false;
     }
