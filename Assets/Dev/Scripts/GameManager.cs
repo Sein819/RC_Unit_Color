@@ -133,6 +133,12 @@ public class GameManager : MonoBehaviour
         }
         else if(roomCount==33){
             //게임 종료
+            PlayerPrefs.SetInt("ClearCount",PlayerPrefs.GetInt("ClearCount")+1);
+            if(rgb[0]==3) PlayerPrefs.SetInt("Achieve_Red",1);
+            else if(rgb[1]==3) PlayerPrefs.SetInt("Achieve_Green",1);
+            else if(rgb[2]==3) PlayerPrefs.SetInt("Achieve_Blue",1);
+            else if(rgb[0]+rgb[1]+rgb[2]==0) PlayerPrefs.SetInt("Achieve_Black",1);
+            else if(rgb[0]==rgb[1]&&rgb[2]==rgb[1]&&rgb[0]==1)PlayerPrefs.SetInt("Achieve_White",1);
             SceneManager.LoadScene("Menu");
         }
         else{

@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyAttack : MonoBehaviour
 {
     public Enemy enemy;
-    public ParticleSystem slashParticle;
+    public ParticleSystem particle;
+    public GameObject[] finalBossAttack2Sprite;
     Collider2D col;
 
     public int type;
@@ -19,10 +20,18 @@ public class EnemyAttack : MonoBehaviour
 
     void Start(){
         if(type==0){
-            var mainModule = slashParticle.main;
+            var mainModule = particle.main;
             mainModule.startRotation = Mathf.Deg2Rad * transform.rotation.z;
         }
         else if(type==1||type==101) col.enabled=false;
+        else if(type==102){
+            col.enabled=false;
+            Vector2 dir = (GameManager.instance.player.transform.position - transform.position);
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+            finalBossAttack2Sprite[1].SetActive(false);
+            finalBossAttack2Sprite[0].SetActive(true);
+        }
 
         Destroy(gameObject,destroyTime);
     }
@@ -33,8 +42,19 @@ public class EnemyAttack : MonoBehaviour
         if(type==1&&timer>0.8f&&timer<1f) col.enabled=true;
         if(type==1&&timer>=1f) col.enabled=false;
 
-        if(type==101&&timer>=1f&&timer<2f) col.enabled=true;
-        if(type==101&&timer>=2f) col.enabled=false;
+        if((type==101||type==102)&&timer>=0.8f&&timer<1.8f) {
+            col.enabled=true;
+            if(type==102){
+                finalBossAttack2Sprite[1].SetActive(true);
+                finalBossAttack2Sprite[0].SetActive(false);
+            }
+        }
+        if((type==101||type==102)&&timer>=1.8f){
+            col.enabled=false;
+            if(type==102){
+                finalBossAttack2Sprite[1].SetActive(false);
+            }
+        }
     }
 
     //데미지
@@ -46,6 +66,7 @@ public class EnemyAttack : MonoBehaviour
             float damage;
             if(type==1) damage = 8;
             else if(type==101) damage = 10;
+            else if(type==102) damage = 12;
             else damage=5;
 
             if(playerScript.reflect){
