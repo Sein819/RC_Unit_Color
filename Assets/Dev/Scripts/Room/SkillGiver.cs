@@ -280,6 +280,8 @@ public class SkillGiver : MonoBehaviour
 
     //최종 스킬
     void FinalSkill(){
+        player.hp = Mathf.Min(player.hp + player.maxHp*0.2f, player.maxHp);
+        
         AbilitySystem skill = GameManager.instance.player.GetComponent<AbilitySystem>();
         int type=JudgeFinalSkillColor();
         player.finalSkillType=type;

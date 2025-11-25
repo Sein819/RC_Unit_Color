@@ -23,7 +23,7 @@ public class EnemyAttack : MonoBehaviour
             var mainModule = particle.main;
             mainModule.startRotation = Mathf.Deg2Rad * transform.rotation.z;
         }
-        else if(type==1||type==101) col.enabled=false;
+        else if(type==1||type==2||type==101) col.enabled=false;
         else if(type==102){
             col.enabled=false;
             Vector2 dir = (GameManager.instance.player.transform.position - transform.position);
@@ -41,6 +41,9 @@ public class EnemyAttack : MonoBehaviour
 
         if(type==1&&timer>0.8f&&timer<1f) col.enabled=true;
         if(type==1&&timer>=1f) col.enabled=false;
+
+        if(type==2&&timer>0.5f&&timer<0.7f) col.enabled=true;
+        if(type==2&&timer>=0.7f) col.enabled=false;
 
         if((type==101||type==102)&&timer>=0.8f&&timer<1.8f) {
             col.enabled=true;
@@ -65,6 +68,7 @@ public class EnemyAttack : MonoBehaviour
 
             float damage;
             if(type==1) damage = 8;
+            else if(type==2) damage = 3;
             else if(type==101) damage = 10;
             else if(type==102) damage = 12;
             else damage=5;

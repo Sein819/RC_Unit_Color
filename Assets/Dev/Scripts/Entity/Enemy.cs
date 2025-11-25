@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
 {
     public GameObject attackPrefab;
     public GameObject dieEffect;
-    public GameObject[] finalBossAttack;
+    public GameObject[] bossSkill;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
@@ -47,7 +47,7 @@ public class Enemy : MonoBehaviour
             maxHp=50;
             attackSpeed=100;
             moveSpeed=1.5f;
-            attackCd=4f;
+            attackCd=3.5f;
             attackRange = 0.7f;
         }
         else if (type == 2)
@@ -179,9 +179,9 @@ public class Enemy : MonoBehaviour
         GameObject prefab;
 
         isAttacking=true;
-        if(type!=2)anim.SetTrigger("Attack");
         //기본 적
         if(type==0){
+            anim.SetTrigger("Attack");
             yield return new WaitForSeconds(0.3f);
             prefab=Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
             prefab.GetComponent<EnemyAttack>().enemy=this;
@@ -203,37 +203,49 @@ public class Enemy : MonoBehaviour
         }
         //색보스1
         else if(type==1){
-            immune+=1;
-            col.enabled=false;
-            for(float i=0;i<15;){
-                transform.position+=new Vector3(0,Time.deltaTime*30,0);
-                yield return null;
-                i+=Time.deltaTime*30;
-            }
-            Vector2 pos = GameManager.instance.player.transform.position;
-            prefab=Instantiate(attackPrefab,pos,transform.rotation);
-            prefab.GetComponent<EnemyAttack>().enemy=this;
+            int randomSkill=Random.Range(1,3);
+            if(randomSkill==1){
+                anim.SetTrigger("Attack");
+                immune+=1;
+                col.enabled=false;
+                for(float i=0;i<15;){
+                    transform.position+=new Vector3(0,Time.deltaTime*30,0);
+                    yield return null;
+                    i+=Time.deltaTime*30;
+                }
+                Vector2 pos = GameManager.instance.player.transform.position;
+                prefab=Instantiate(bossSkill[0],pos,transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
 
-            yield return new WaitForSeconds(0.40f);
-            transform.position=pos+new Vector2(0,10);
-            for(float i=0;i<10;){
-                transform.position-=new Vector3(0,Time.deltaTime*30,0);
-                yield return null;
-                i+=Time.deltaTime*30;
+                yield return new WaitForSeconds(0.40f);
+                transform.position=pos+new Vector2(0,10);
+                for(float i=0;i<10;){
+                    transform.position-=new Vector3(0,Time.deltaTime*30,0);
+                    yield return null;
+                    i+=Time.deltaTime*30;
+                }
+                col.enabled=true;
+                immune-=1;
             }
-            col.enabled=true;
-            immune-=1;
+            else{
+                for(int i=0;i<5;i++){
+                    prefab=Instantiate(bossSkill[1],GameManager.instance.player.transform.position,transform.rotation);
+                    prefab.GetComponent<EnemyAttack>().enemy=this;
+                    yield return new WaitForSeconds(0.2f);
+                }
+            }
         }
         //최종 보스
         else if(type==101){
+            anim.SetTrigger("Attack");
             int randomSkill=Random.Range(1,3);
             if(randomSkill==1){
-                prefab=Instantiate(finalBossAttack[0],GameManager.instance.player.transform.position,transform.rotation);
+                prefab=Instantiate(bossSkill[0],GameManager.instance.player.transform.position,transform.rotation);
                 prefab.GetComponent<EnemyAttack>().enemy=this;
                 yield return new WaitForSeconds(1f);
             }
             else{
-                prefab=Instantiate(finalBossAttack[1],transform.position+new Vector3(0,1,0),transform.rotation);
+                prefab=Instantiate(bossSkill[1],transform.position+new Vector3(0,1,0),transform.rotation);
                 prefab.GetComponent<EnemyAttack>().enemy=this;
                 yield return new WaitForSeconds(1f);
             }
