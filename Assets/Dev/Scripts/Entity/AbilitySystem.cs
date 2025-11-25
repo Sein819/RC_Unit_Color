@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AbilitySystem : MonoBehaviour
 {
     Player player;
 
     [Header("쿨타임 설정 (초)")]
+    public float blackCooldown = 60f;
     public float berserkCooldown = 60f;
     public float reflectCooldown = 60f;
     public float doubleStrikeCooldown = 30f;
@@ -30,6 +32,10 @@ public class AbilitySystem : MonoBehaviour
     void Awake()
     {
         player = gameObject.GetComponent<Player>();
+
+        for(int i=0;i<3;i++) {
+            cooldownImage[i].SetActive(false);
+        }
     }
 
     void Start()
@@ -63,10 +69,12 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 흑백
     // ─────────────────────────────
-    public void Black1()
+    public void Black1(int button)
     {
         Debug.Log($"흑백 스킬 발동! (적을 동료로 전환)");
         // 실제 AI/팀 전환은 Enemy 스크립트에서 구현 필요
+
+        StartCoroutine(CooltimeRoutine(button,blackCooldown));
     }
 
 
@@ -82,12 +90,14 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 1번: 광전사 (이미 존재)
-    public void Red2()
+    public void Red2(int button)
     {
         if (Time.time - lastBerserkTime < berserkCooldown) return;
 
         StartCoroutine(BerserkRoutine());
         lastBerserkTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,berserkCooldown));
     }
 
     IEnumerator BerserkRoutine()
@@ -130,12 +140,14 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 4번: 데미지 반사 (이미 존재)
-    public void Green2()
+    public void Green2(int button)
     {
         if (Time.time - lastReflectTime < reflectCooldown) return;
 
         StartCoroutine(ReflectRoutine());
         lastReflectTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,reflectCooldown));
     }
 
     private IEnumerator ReflectRoutine()
@@ -169,12 +181,14 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
 
     // 6번: 더블 카운터 (기존)
-    public void Blue1()
+    public void Blue1(int button)
     {
         if (Time.time - lastDoubleStrikeTime < doubleStrikeCooldown) return;
 
         StartCoroutine(DoubleStrikeRoutine());
         lastDoubleStrikeTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,doubleStrikeCooldown));
     }
 
     public GameObject attackSpeedEffect;
@@ -191,12 +205,14 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 7번: 돌격 (기존)
-    public void Blue2()
+    public void Blue2(int button)
     {
         if (Time.time - lastChargeTime < chargeCooldown) return;
 
         StartCoroutine(Charge());
         lastChargeTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,chargeCooldown));
     }
 
     IEnumerator Charge()
@@ -227,5 +243,26 @@ public class AbilitySystem : MonoBehaviour
             if (player.skills[i] == type) return true;
         }
         return false;
+    }
+
+    //스킬 쿨 표시
+    public Button[] skillButton;
+    public Text[] cooldownText;
+    public GameObject[] cooldownImage;
+
+    IEnumerator CooltimeRoutine(int type,float cd) {
+        float time = cd;
+        skillButton[type].interactable=false;
+        cooldownImage[type].SetActive(true);
+
+        while (time > 0) {
+            time -= Time.deltaTime;
+            cooldownText[type].text = time.ToString("F1");
+            yield return null;
+        }
+
+        cooldownImage[type].SetActive(false);
+        cooldownText[type].text = "";
+        skillButton[type].interactable=true;
     }
 }
