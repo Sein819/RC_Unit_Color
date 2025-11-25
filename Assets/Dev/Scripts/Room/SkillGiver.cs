@@ -228,29 +228,29 @@ public class SkillGiver : MonoBehaviour
             return;
         }
         if(type==-2){ //흑백
-            skillButton[button].onClick.AddListener(() => skillScript.Black1());
+            skillButton[button].onClick.AddListener(() => skillScript.Black1(button));
             SetActivateSkillButton(type, button);
         }
         else if(type==0){ //강하게 치기
             skillScript.Red1();
         }
         else if(type==1){ //광전사
-            skillButton[button].onClick.AddListener(() => skillScript.Red2());
+            skillButton[button].onClick.AddListener(() => skillScript.Red2(button));
             SetActivateSkillButton(type, button);
         }
         else if(type==2){ //체력회복
             skillScript.Green1();
         }
         else if(type==3){ //데미지 반사
-            skillButton[button].onClick.AddListener(() => skillScript.Green2());
+            skillButton[button].onClick.AddListener(() => skillScript.Green2(button));
             SetActivateSkillButton(type, button);
         }
         else if(type==4){ //한대 더 때리기
-            skillButton[button].onClick.AddListener(() => skillScript.Blue1());
+            skillButton[button].onClick.AddListener(() => skillScript.Blue1(button));
             SetActivateSkillButton(type, button);
         }
         else if(type==5){ //돌격
-            skillButton[button].onClick.AddListener(() => skillScript.Blue2());
+            skillButton[button].onClick.AddListener(() => skillScript.Blue2(button));
             SetActivateSkillButton(type, button);
         }
         else{
