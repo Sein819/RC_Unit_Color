@@ -140,6 +140,8 @@ public class Player : MonoBehaviour
     public IEnumerator HitColor(){
         hpUI.value = (float)hp/maxHp;
 
+        audioPlayer.PlayOneShot(basicAudios[2]); 
+
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 1f);
         sr.SetPropertyBlock(mpb);
