@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class AbilitySystem : MonoBehaviour
 {
     Player player;
+    public GameObject[] effectObject;
+    public Slider hpUI;
 
     [Header("쿨타임 설정 (초)")]
     public float blackCooldown = 60f;
@@ -36,6 +38,11 @@ public class AbilitySystem : MonoBehaviour
         for(int i=0;i<3;i++) {
             cooldownImage[i].SetActive(false);
         }
+
+        for(int i=0;i<effectObject.Length;i++){
+            if(effectObject[i]==null) continue;
+            effectObject[i].SetActive(false);
+        }
     }
 
     void Start()
@@ -62,6 +69,8 @@ public class AbilitySystem : MonoBehaviour
             player.hp = Mathf.Min(player.hp + regenAmount, player.maxHp);
             lastHealthRegenTime = Time.time;
             Debug.Log($"체력 회복 발동! +{regenAmount} (현재 체력: {player.hp})");
+            StartCoroutine(ShowEffect(2,2));
+            hpUI.value = (float)player.hp/player.maxHp;
         }
     }
 
@@ -98,6 +107,7 @@ public class AbilitySystem : MonoBehaviour
         lastBerserkTime = Time.time;
 
         StartCoroutine(CooltimeRoutine(button,berserkCooldown));
+        StartCoroutine(ShowEffect(1,5));
     }
 
     IEnumerator BerserkRoutine()
@@ -121,6 +131,7 @@ public class AbilitySystem : MonoBehaviour
 
         // 체력 소모
         player.hp -= 50f;
+        hpUI.value = (float)player.hp/player.maxHp;
 
         // 데미지 2배 적용
         player.redFinalActive = true;
@@ -148,6 +159,7 @@ public class AbilitySystem : MonoBehaviour
         lastReflectTime = Time.time;
 
         StartCoroutine(CooltimeRoutine(button,reflectCooldown));
+        StartCoroutine(ShowEffect(3,5));
     }
 
     private IEnumerator ReflectRoutine()
@@ -173,6 +185,7 @@ public class AbilitySystem : MonoBehaviour
 
         player.hp = player.maxHp * 0.5f;
         Debug.Log("🟩 부활 발동! 체력 50%로 부활!");
+        hpUI.value = (float)player.hp/player.maxHp;
     }
 
 
@@ -189,6 +202,7 @@ public class AbilitySystem : MonoBehaviour
         lastDoubleStrikeTime = Time.time;
 
         StartCoroutine(CooltimeRoutine(button,doubleStrikeCooldown));
+        StartCoroutine(ShowEffect(4,5));
     }
 
     public GameObject attackSpeedEffect;
@@ -213,6 +227,7 @@ public class AbilitySystem : MonoBehaviour
         lastChargeTime = Time.time;
 
         StartCoroutine(CooltimeRoutine(button,chargeCooldown));
+        StartCoroutine(ShowEffect(5,5));
     }
 
     IEnumerator Charge()
@@ -264,5 +279,11 @@ public class AbilitySystem : MonoBehaviour
         cooldownImage[type].SetActive(false);
         cooldownText[type].text = "";
         skillButton[type].interactable=true;
+    }
+
+    IEnumerator ShowEffect(int i, float time){
+        effectObject[i].SetActive(true);
+        yield return new WaitForSeconds(time);
+        effectObject[i].SetActive(false);
     }
 }

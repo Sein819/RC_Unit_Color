@@ -18,6 +18,7 @@ public class SkillGiver : MonoBehaviour
     public Sprite blackSkillSprite;
     public GameObject finalSkillEffect;
     public GameObject healEffect;
+    public Slider hpUI;
 
     Player player;
     AbilitySystem skillScript;
@@ -63,6 +64,7 @@ public class SkillGiver : MonoBehaviour
         casinoUI.SetActive(false);
         player.isCasino=false;
         StartCoroutine(ActivateHealEffect());
+        hpUI.value = (float)player.hp/player.maxHp;
     }
 
     IEnumerator ActivateHealEffect(){
@@ -281,6 +283,7 @@ public class SkillGiver : MonoBehaviour
     //최종 스킬
     void FinalSkill(){
         player.hp = Mathf.Min(player.hp + player.maxHp*0.2f, player.maxHp);
+        hpUI.value = (float)player.hp/player.maxHp;
         
         AbilitySystem skill = GameManager.instance.player.GetComponent<AbilitySystem>();
         int type=JudgeFinalSkillColor();
