@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Material enemyMat;
     public GameObject casino;
     public GameObject finalSkillGiver;
+    public Slider hpUI;
 
     Player playerScript;
     public float[] rgb;
@@ -172,6 +173,7 @@ public class GameManager : MonoBehaviour
             enemyMat.SetFloat("_G",rgb[1]);
             playerScript.maxHp+=20;
             playerScript.hp*=playerScript.maxHp/(playerScript.maxHp-20);
+            hpUI.value = (float)playerScript.hp/playerScript.maxHp;
         }
         else{
             rgb[2]+=0.25f;

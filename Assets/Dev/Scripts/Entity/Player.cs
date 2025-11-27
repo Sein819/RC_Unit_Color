@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public FloatingJoystick joy;
     public GameObject slash;
+    public Slider hpUI;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
@@ -117,6 +119,8 @@ public class Player : MonoBehaviour
 
     //피해 입기
     public IEnumerator HitColor(){
+        hpUI.value = (float)hp/maxHp;
+
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 1f);
         sr.SetPropertyBlock(mpb);

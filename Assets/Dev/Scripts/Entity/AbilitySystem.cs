@@ -7,6 +7,7 @@ public class AbilitySystem : MonoBehaviour
 {
     Player player;
     public GameObject[] effectObject;
+    public Slider hpUI;
 
     [Header("쿨타임 설정 (초)")]
     public float blackCooldown = 60f;
@@ -69,6 +70,7 @@ public class AbilitySystem : MonoBehaviour
             lastHealthRegenTime = Time.time;
             Debug.Log($"체력 회복 발동! +{regenAmount} (현재 체력: {player.hp})");
             StartCoroutine(ShowEffect(2,2));
+            hpUI.value = (float)player.hp/player.maxHp;
         }
     }
 
@@ -129,6 +131,7 @@ public class AbilitySystem : MonoBehaviour
 
         // 체력 소모
         player.hp -= 50f;
+        hpUI.value = (float)player.hp/player.maxHp;
 
         // 데미지 2배 적용
         player.redFinalActive = true;
@@ -182,6 +185,7 @@ public class AbilitySystem : MonoBehaviour
 
         player.hp = player.maxHp * 0.5f;
         Debug.Log("🟩 부활 발동! 체력 50%로 부활!");
+        hpUI.value = (float)player.hp/player.maxHp;
     }
 
 
