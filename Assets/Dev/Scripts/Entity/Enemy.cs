@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -25,6 +26,44 @@ public class Enemy : MonoBehaviour
     [HideInInspector]
     public int immune;
 
+    //유니크
+    public bool isUnique;
+    public int uniqueType; // 0 = Red, 1 = Green, 2 = Blue
+
+    float uniqueDashTimer = 0f;
+    public float dashCooldown = 3f;
+    public float dashPower = 8f;
+
+
+    void SetupUnique()
+    {
+        if (uniqueType == 0)
+            SetupRedUnique();
+        else if (uniqueType == 1)
+            SetupGreenUnique();
+        else if (uniqueType == 2)
+            SetupBlueUnique();
+    }
+
+    void SetupRedUnique()
+    {
+        maxHp = 40; 
+        attackRange = 2f;
+    }
+
+    void SetupBlueUnique()
+    {
+        hp *= 3;       // 체력 증가
+        moveSpeed *= 1.5f;
+    }
+
+    void SetupGreenUnique()
+    {
+        hp *= 3.5f;       // 체력 증가
+        moveSpeed *= 1.5f;
+    }
+
+
     float timer;
     float attackCd;
     float lastAttackTime;
@@ -38,12 +77,12 @@ public class Enemy : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
         anim=GetComponent<Animator>();
         col=GetComponent<Collider2D>();
 
-        if(type==1){
+        if (type==1){
             maxHp=50;
             attackSpeed=100;
             moveSpeed=1.5f;
@@ -72,10 +111,16 @@ public class Enemy : MonoBehaviour
             attackCd = 0.7f;
             attackRange = 0.8f;
         }
-        hp=maxHp;
+
+        if (isUnique) //유니크
+        {
+            SetupUnique();
+        }
+
+        hp = maxHp;
         dead=false;
 
-        if(GameManager.instance.slowEnemy) moveSpeed*=0.7f;
+        if(GameManager.instance.slowEnemy) moveSpeed*=0.7f; 
 
         timer=0;
         lastAttackTime=-999;
@@ -87,13 +132,19 @@ public class Enemy : MonoBehaviour
     void Update(){
         if (dead) return;
         timer += Time.deltaTime;
-        if(type!=1&&type!=2&&type!=101) anim.SetBool("IsRunning", isRunning);
+
+        if (type!=1&&type!=2&&type!=101) anim.SetBool("IsRunning", isRunning);
 
 
-        if (timer > lastAttackTime + attackCd / attackSpeed * 100 && (type == 1 || type == 101)){
-            StartCoroutine(Attack());
-            lastAttackTime = timer+Random.Range(0f,1.5f);
+        if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+        {
+            if (type == 1 || type == 101 || (type == 0 && isUnique))
+            {
+                StartCoroutine(Attack());
+                lastAttackTime = timer + UnityEngine.Random.Range(0f, 1.5f);
+            }
         }
+
     }
 
     void FixedUpdate(){
@@ -103,9 +154,22 @@ public class Enemy : MonoBehaviour
 
     //이동
     void Move(){
-        // 원거리 적 이동
+
         Transform player = GameManager.instance.player.transform;
         // 플레이어까지의 거리 계산
+
+        //빨강 유니크용 
+        if (isUnique && uniqueType == 0 && type == 0)
+        {
+            // 바라보는 방향만 플레이어 쪽으로
+            sr.flipX = player.position.x < transform.position.x;
+
+            // 이동은 하지 않음
+            // 공격 타이밍은 기존 로직(Attack 호출)에 맡김
+            return;
+        }
+
+        // 원거리 적 이동
         float distance = Vector2.Distance(transform.position, player.transform.position);
         if (type == 2)
         {
@@ -179,8 +243,47 @@ public class Enemy : MonoBehaviour
         GameObject prefab;
 
         isAttacking=true;
+        //빨강 유니크 
+        if (isUnique && uniqueType == 0 && type == 0)
+        {
+            Transform player = GameManager.instance.player.transform;
+            float distance = Vector2.Distance(transform.position, player.position);
+
+            // 근접 사거리 밖이면 투사체
+            if (distance > attackRange)
+            {
+                yield return new WaitForSeconds(0.3f); // 다른 적과 동일한 선딜
+
+                // 방향 계산
+                Vector2 dir = (player.position - transform.position).normalized;
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+                GameObject p = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+                p.GetComponent<arrow>().enemy = this;
+            }
+            // 근접 사거리 안이면 기본 근접 공격
+            else
+            {
+                anim.SetTrigger("Attack");
+                yield return new WaitForSeconds(0.3f);
+            
+
+                prefab = Instantiate(
+                    attackPrefab,
+                    new Vector2(transform.position.x, transform.position.y + 0.2f),
+                    Quaternion.Euler(new Vector3(0, 0, sr.flipX ? 180 : 0))
+                );
+                prefab.GetComponent<EnemyAttack>().enemy = this;
+
+                yield return new WaitForSeconds(0.2f);
+            }
+
+            isAttacking = false;
+            yield break;
+        }
+
         //기본 적
-        if(type==0){
+        if (type==0){
             anim.SetTrigger("Attack");
             yield return new WaitForSeconds(0.3f);
             prefab=Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
@@ -272,3 +375,4 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

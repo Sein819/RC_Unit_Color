@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class GameManager : MonoBehaviour
@@ -21,6 +21,13 @@ public class GameManager : MonoBehaviour
     public GameObject casino;
     public GameObject finalSkillGiver;
     public Slider hpUI;
+
+    //유니크 몬스터
+    public GameObject[] uniqueEnemy;
+    [Header("Unique Spawn Chance")]
+    [Range(0f, 1f)]
+    public float redUniqueSpawnChance = 0.1f;  // 10% 확률
+
 
     Player playerScript;
     public float[] rgb;
@@ -78,12 +85,43 @@ public class GameManager : MonoBehaviour
 
     //적 소환
     void SpawnEnemy(int type, int amount){
-        for(int i=0;i<amount;i++){
-            if(type==1) Instantiate(colorBoss,new Vector2(0,4),transform.rotation);
-            else if(type==101) Instantiate(finalBoss,new Vector2(0,4),transform.rotation);
-            else Instantiate(enemy[Random.Range(0,enemy.Length)],new Vector2(Random.Range(-5.5f,5.5f),Random.Range(-5.5f,5.5f)),transform.rotation);
+        bool spawnRedUnique = false;
+
+        // 방 당 한 번만 확률 체크
+        if (type == 0 && uniqueEnemy.Length > 0)
+        {
+            spawnRedUnique = UnityEngine.Random.value < redUniqueSpawnChance;
         }
-        enemyAmount+=amount;
+
+        // 유니크를 언제 넣을지 인덱스 하나 랜덤
+        int uniqueIndex = UnityEngine.Random.Range(0, amount);
+
+        for (int i=0;i<amount;i++){
+            Vector2 pos = new Vector2(Random.Range(-5.5f, 5.5f), Random.Range(-5.5f, 5.5f));
+
+            // 보스는 그대로
+            if (type == 1)
+            {
+                Instantiate(colorBoss, new Vector2(0, 4), transform.rotation);
+            }
+            else if (type == 101)
+            {
+                Instantiate(finalBoss, new Vector2(0, 4), transform.rotation);
+            }
+            else
+            {
+                if (spawnRedUnique && i == uniqueIndex)
+                {
+                    Instantiate(uniqueEnemy[0], pos, Quaternion.identity);
+                }
+                else
+                {
+                    Instantiate(enemy[UnityEngine.Random.Range(0, enemy.Length)], pos, Quaternion.identity);
+                }
+            }
+        }
+
+        enemyAmount += amount;
     }
 
     //적 사망
@@ -103,7 +141,7 @@ public class GameManager : MonoBehaviour
     }
 
     //방 입장
-    public void EnterRoom(int type){ //0=빨강, 1=초록, 2=파랑
+    public void EnterRoom(int type){ 
         defaultRoom.SetActive(false);
         colorRoom.SetActive(false);
         casino.SetActive(false);
@@ -142,19 +180,23 @@ public class GameManager : MonoBehaviour
             else if(rgb[0]==rgb[1]&&rgb[2]==rgb[1]&&rgb[0]==1)PlayerPrefs.SetInt("Achieve_White",1);
             SceneManager.LoadScene("Menu");
         }
-        else{
-            if(type>=0){
-                //색깔방
-                if(roomCount%7==6){
-                    //색보스
-                    SpawnEnemy(1,1);
-                }
+        else
+        {
+            if (type >= 0)
+            {
+                SpawnEnemy(0, 4 + roomCount / 6);
+
+                //  색 보스 등장 조건
+                if (roomCount % 7 == 6)
+                    SpawnEnemy(1, 1);
             }
-            else{
-                //기본방
-            } 
-            SpawnEnemy(0,5+roomCount/5);
+            else
+            {
+                // 기본방 
+                SpawnEnemy(0, 5 + roomCount / 5);
+            }
         }
+
     }
 
     //색 획득
@@ -188,4 +230,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene("Menu");
     }
+
 }
+
