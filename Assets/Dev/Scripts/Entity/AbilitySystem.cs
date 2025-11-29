@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AbilitySystem : MonoBehaviour
 {
     Player player;
+    public GameObject[] effectObject;
+    public Slider hpUI;
 
     [Header("쿨타임 설정 (초)")]
+    public float blackCooldown = 60f;
     public float berserkCooldown = 60f;
     public float reflectCooldown = 60f;
     public float doubleStrikeCooldown = 30f;
@@ -30,6 +34,15 @@ public class AbilitySystem : MonoBehaviour
     void Awake()
     {
         player = gameObject.GetComponent<Player>();
+
+        for(int i=0;i<3;i++) {
+            cooldownImage[i].SetActive(false);
+        }
+
+        for(int i=0;i<effectObject.Length;i++){
+            if(effectObject[i]==null) continue;
+            effectObject[i].SetActive(false);
+        }
     }
 
     void Start()
@@ -56,6 +69,8 @@ public class AbilitySystem : MonoBehaviour
             player.hp = Mathf.Min(player.hp + regenAmount, player.maxHp);
             lastHealthRegenTime = Time.time;
             Debug.Log($"체력 회복 발동! +{regenAmount} (현재 체력: {player.hp})");
+            StartCoroutine(ShowEffect(2,2));
+            hpUI.value = (float)player.hp/player.maxHp;
         }
     }
 
@@ -63,10 +78,12 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
     // 흑백
     // ─────────────────────────────
-    public void Black1()
+    public void Black1(int button)
     {
         Debug.Log($"흑백 스킬 발동! (적을 동료로 전환)");
         // 실제 AI/팀 전환은 Enemy 스크립트에서 구현 필요
+
+        StartCoroutine(CooltimeRoutine(button,blackCooldown));
     }
 
 
@@ -82,12 +99,15 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 1번: 광전사 (이미 존재)
-    public void Red2()
+    public void Red2(int button)
     {
         if (Time.time - lastBerserkTime < berserkCooldown) return;
 
         StartCoroutine(BerserkRoutine());
         lastBerserkTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,berserkCooldown));
+        StartCoroutine(ShowEffect(1,5));
     }
 
     IEnumerator BerserkRoutine()
@@ -111,6 +131,7 @@ public class AbilitySystem : MonoBehaviour
 
         // 체력 소모
         player.hp -= 50f;
+        hpUI.value = (float)player.hp/player.maxHp;
 
         // 데미지 2배 적용
         player.redFinalActive = true;
@@ -130,12 +151,15 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 4번: 데미지 반사 (이미 존재)
-    public void Green2()
+    public void Green2(int button)
     {
         if (Time.time - lastReflectTime < reflectCooldown) return;
 
         StartCoroutine(ReflectRoutine());
         lastReflectTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,reflectCooldown));
+        StartCoroutine(ShowEffect(3,5));
     }
 
     private IEnumerator ReflectRoutine()
@@ -161,6 +185,7 @@ public class AbilitySystem : MonoBehaviour
 
         player.hp = player.maxHp * 0.5f;
         Debug.Log("🟩 부활 발동! 체력 50%로 부활!");
+        hpUI.value = (float)player.hp/player.maxHp;
     }
 
 
@@ -169,12 +194,15 @@ public class AbilitySystem : MonoBehaviour
     // ─────────────────────────────
 
     // 6번: 더블 카운터 (기존)
-    public void Blue1()
+    public void Blue1(int button)
     {
         if (Time.time - lastDoubleStrikeTime < doubleStrikeCooldown) return;
 
         StartCoroutine(DoubleStrikeRoutine());
         lastDoubleStrikeTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,doubleStrikeCooldown));
+        StartCoroutine(ShowEffect(4,5));
     }
 
     public GameObject attackSpeedEffect;
@@ -191,12 +219,15 @@ public class AbilitySystem : MonoBehaviour
     }
 
     // 7번: 돌격 (기존)
-    public void Blue2()
+    public void Blue2(int button)
     {
         if (Time.time - lastChargeTime < chargeCooldown) return;
 
         StartCoroutine(Charge());
         lastChargeTime = Time.time;
+
+        StartCoroutine(CooltimeRoutine(button,chargeCooldown));
+        StartCoroutine(ShowEffect(5,5));
     }
 
     IEnumerator Charge()
@@ -227,5 +258,32 @@ public class AbilitySystem : MonoBehaviour
             if (player.skills[i] == type) return true;
         }
         return false;
+    }
+
+    //스킬 쿨 표시
+    public Button[] skillButton;
+    public Text[] cooldownText;
+    public GameObject[] cooldownImage;
+
+    IEnumerator CooltimeRoutine(int type,float cd) {
+        float time = cd;
+        skillButton[type].interactable=false;
+        cooldownImage[type].SetActive(true);
+
+        while (time > 0) {
+            time -= Time.deltaTime;
+            cooldownText[type].text = time.ToString("F1");
+            yield return null;
+        }
+
+        cooldownImage[type].SetActive(false);
+        cooldownText[type].text = "";
+        skillButton[type].interactable=true;
+    }
+
+    IEnumerator ShowEffect(int i, float time){
+        effectObject[i].SetActive(true);
+        yield return new WaitForSeconds(time);
+        effectObject[i].SetActive(false);
     }
 }
