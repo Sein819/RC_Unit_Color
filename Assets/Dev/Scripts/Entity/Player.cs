@@ -1,15 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public FloatingJoystick joy;
     public GameObject slash;
+    public Slider hpUI;
 
     Rigidbody2D rb;
     SpriteRenderer sr;
     MaterialPropertyBlock mpb;
+
+    //효과음 관련
+    private AudioSource audioPlayer;
+    private float lastMoveSfxTime = 0f;
+    public AudioClip[] basicAudios;
+    public AudioClip moveSfx;
+    public AudioClip attackSfx;
+    public float moveSfxInterval = 0.25f; //발걸음 주기
 
     public float maxHp;
     public float hp;
@@ -38,6 +48,8 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         mpb = new MaterialPropertyBlock();
+
+        audioPlayer = GetComponent<AudioSource>(); 
 
         maxHp=150;
         hp=maxHp;
@@ -93,6 +105,12 @@ public class Player : MonoBehaviour
         if (input != Vector2.zero){
             if(input.x > 0) sr.flipX = false;
             else if(input.x < 0) sr.flipX = true;
+           
+            if (Time.time - lastMoveSfxTime > moveSfxInterval) //이동 효과음
+            {
+                audioPlayer.PlayOneShot(basicAudios[0]);
+                lastMoveSfxTime = Time.time;
+            }
 
             Transform direction = transform.Find("PlayerDirection");
             float targetAngle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
@@ -107,6 +125,9 @@ public class Player : MonoBehaviour
 
     //공격
     void Attack(){
+
+        audioPlayer.PlayOneShot(basicAudios[1]); // 효과음
+
         //공격 애니메이션
         GameObject prefab = Instantiate(slash,new Vector2(transform.position.x,transform.position.y+0.4f),transform.rotation);
         if(redFinalActive){
@@ -117,6 +138,10 @@ public class Player : MonoBehaviour
 
     //피해 입기
     public IEnumerator HitColor(){
+        hpUI.value = (float)hp/maxHp;
+
+        audioPlayer.PlayOneShot(basicAudios[2]); 
+
         sr.GetPropertyBlock(mpb);
         mpb.SetFloat("_IsDamaged", 1f);
         sr.SetPropertyBlock(mpb);

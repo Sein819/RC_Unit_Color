@@ -4943,8 +4943,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ce2cfabb03ec14aac98ecdc94f6686, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slashParticle: {fileID: 0}
-  col: {fileID: 0}
+  enemy: {fileID: 0}
+  particle: {fileID: 0}
+  finalBossAttack2Sprite: []
   type: 1
   destroyTime: 2
 --- !u!58 &2885379789818823919

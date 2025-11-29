@@ -165,6 +165,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPrefab: {fileID: 3970491398672668583, guid: 4e56e183db8ace944a533189b48dd31e, type: 3}
   dieEffect: {fileID: 1857132746624371987, guid: 3effd5afdc5e828409a02c471d9f4adf, type: 3}
+  bossSkill:
+  - {fileID: 3970491398672668583, guid: 4e56e183db8ace944a533189b48dd31e, type: 3}
+  - {fileID: 3970491398672668583, guid: bd0ab27aa12654b4ab1719298fff5696, type: 3}
+  firePoint: {fileID: 0}
+  projectilePrefab: {fileID: 0}
   type: 101
   maxHp: 0
   hp: 0

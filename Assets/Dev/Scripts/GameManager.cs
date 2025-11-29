@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Material enemyMat;
     public GameObject casino;
     public GameObject finalSkillGiver;
+    public Slider hpUI;
 
     Player playerScript;
     public float[] rgb;
@@ -133,6 +134,12 @@ public class GameManager : MonoBehaviour
         }
         else if(roomCount==33){
             //게임 종료
+            PlayerPrefs.SetInt("ClearCount",PlayerPrefs.GetInt("ClearCount")+1);
+            if(rgb[0]==3) PlayerPrefs.SetInt("Achieve_Red",1);
+            else if(rgb[1]==3) PlayerPrefs.SetInt("Achieve_Green",1);
+            else if(rgb[2]==3) PlayerPrefs.SetInt("Achieve_Blue",1);
+            else if(rgb[0]+rgb[1]+rgb[2]==0) PlayerPrefs.SetInt("Achieve_Black",1);
+            else if(rgb[0]==rgb[1]&&rgb[2]==rgb[1]&&rgb[0]==1)PlayerPrefs.SetInt("Achieve_White",1);
             SceneManager.LoadScene("Menu");
         }
         else{
@@ -166,6 +173,7 @@ public class GameManager : MonoBehaviour
             enemyMat.SetFloat("_G",rgb[1]);
             playerScript.maxHp+=20;
             playerScript.hp*=playerScript.maxHp/(playerScript.maxHp-20);
+            hpUI.value = (float)playerScript.hp/playerScript.maxHp;
         }
         else{
             rgb[2]+=0.25f;
