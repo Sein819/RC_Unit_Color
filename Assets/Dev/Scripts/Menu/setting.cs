@@ -5,20 +5,36 @@ using UnityEngine.SceneManagement;
 
 public class setting : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject pauseCanvas;
+
     void Start()
     {
-        
+        Time.timeScale = 1;
+        pauseCanvas.SetActive(false);
+        AudioListener.pause = false;
     }
 
-    public void GameSet()
+    public void Setting()
+    {
+        Time.timeScale = 0;
+        pauseCanvas.SetActive(true);
+        AudioListener.pause = true;
+    }
+
+    public void Continue()
+    {
+        Time.timeScale = 1;
+        pauseCanvas.SetActive(false);
+        AudioListener.pause = false;
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
+    public void Exit()
     {
         SceneManager.LoadScene("Menu");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
