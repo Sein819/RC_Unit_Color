@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] uniqueEnemy;
     [Header("Unique Spawn Chance")]
     [Range(0f, 1f)]
-    public float redUniqueSpawnChance = 0.1f;  // 10% 확률
+    public float redUniqueSpawnChance;  // 10% 확률
 
 
     Player playerScript;

@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
     public bool isUnique;
     public int uniqueType; // 0 = Red, 1 = Green, 2 = Blue
 
-    float uniqueDashTimer = 0f;
+    // float uniqueDashTimer = 0f;
     public float dashCooldown = 3f;
     public float dashPower = 8f;
 
@@ -258,7 +258,7 @@ public class Enemy : MonoBehaviour
                 Vector2 dir = (player.position - transform.position).normalized;
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
-                GameObject p = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+                GameObject p = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
                 p.GetComponent<arrow>().enemy = this;
             }
             // 근접 사거리 안이면 기본 근접 공격
