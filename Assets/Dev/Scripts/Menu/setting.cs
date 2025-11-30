@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class setting : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class setting : MonoBehaviour
 
     public void GameSet()
     {
-        SceneManager.LoadScene("Manu");
+        SceneManager.LoadScene("Menu");
     }
 
     // Update is called once per frame
