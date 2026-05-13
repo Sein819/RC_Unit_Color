@@ -1,3 +1,5 @@
+# Lost Color
+
 ## 👥 Contributors
 
 - [Sein819](https://github.com/Sein819)
