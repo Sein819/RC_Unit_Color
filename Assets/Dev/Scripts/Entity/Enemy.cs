@@ -1,0 +1,378 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public GameObject attackPrefab;
+    public GameObject dieEffect;
+    public GameObject[] bossSkill;
+
+    Rigidbody2D rb;
+    SpriteRenderer sr;
+    MaterialPropertyBlock mpb;
+    Animator anim;
+    Collider2D col;
+
+    public Transform firePoint;  // 투사체 발사 위치
+    public GameObject projectilePrefab; // 발사할 투사체
+    public int type;
+    public float maxHp;
+    public float hp;
+    public float attackSpeed;
+    [HideInInspector]
+    public bool dead;
+    [HideInInspector]
+    public int immune;
+
+    //유니크
+    public bool isUnique;
+    public int uniqueType; // 0 = Red, 1 = Green, 2 = Blue
+
+    // float uniqueDashTimer = 0f;
+    public float dashCooldown = 3f;
+    public float dashPower = 8f;
+
+
+    void SetupUnique()
+    {
+        if (uniqueType == 0)
+            SetupRedUnique();
+        else if (uniqueType == 1)
+            SetupGreenUnique();
+        else if (uniqueType == 2)
+            SetupBlueUnique();
+    }
+
+    void SetupRedUnique()
+    {
+        maxHp = 40; 
+        attackRange = 2f;
+    }
+
+    void SetupBlueUnique()
+    {
+        hp *= 3;       // 체력 증가
+        moveSpeed *= 1.5f;
+    }
+
+    void SetupGreenUnique()
+    {
+        hp *= 3.5f;       // 체력 증가
+        moveSpeed *= 1.5f;
+    }
+
+
+    float timer;
+    float attackCd;
+    float lastAttackTime;
+    bool isRunning;
+    bool isAttacking;
+
+    // 플레이어 추적 관련 변수 추가
+    public float moveSpeed;      // 적 이동 속도
+    public float attackRange;  // 플레이어와의 공격 거리
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponentInChildren<SpriteRenderer>();
+        mpb = new MaterialPropertyBlock();
+        anim=GetComponent<Animator>();
+        col=GetComponent<Collider2D>();
+
+        if (type==1){
+            maxHp=50;
+            attackSpeed=100;
+            moveSpeed=1.5f;
+            attackCd=3.5f;
+            attackRange = 0.7f;
+        }
+        else if (type == 2)
+        {
+            maxHp = 8;         
+            attackSpeed = 100;
+            moveSpeed = 1.35f;  
+            attackCd = 2f;     
+            attackRange = 5f;    
+        }
+        else if(type==101){
+            maxHp=300;
+            attackSpeed=100;
+            moveSpeed=1.5f;
+            attackCd=3f;
+            attackRange = 3.5f;
+        }
+        else if (type == 0){
+            maxHp = 13;
+            attackSpeed = 50;
+            moveSpeed = 2;
+            attackCd = 0.7f;
+            attackRange = 0.8f;
+        }
+
+        if (isUnique) //유니크
+        {
+            SetupUnique();
+        }
+
+        hp = maxHp;
+        dead=false;
+
+        if(GameManager.instance.slowEnemy) moveSpeed*=0.7f; 
+
+        timer=0;
+        lastAttackTime=-999;
+        isRunning=false;
+        isAttacking=false;
+        immune=0;
+    }
+
+    void Update(){
+        if (dead) return;
+        timer += Time.deltaTime;
+
+        if (type!=1&&type!=2&&type!=101) anim.SetBool("IsRunning", isRunning);
+
+
+        if (timer > lastAttackTime + attackCd / attackSpeed * 100)
+        {
+            if (type == 1 || type == 101 || (type == 0 && isUnique))
+            {
+                StartCoroutine(Attack());
+                lastAttackTime = timer + UnityEngine.Random.Range(0f, 1.5f);
+            }
+        }
+
+    }
+
+    void FixedUpdate(){
+        if (dead) return;
+        Move();
+    }
+
+    //이동
+    void Move(){
+
+        Transform player = GameManager.instance.player.transform;
+        // 플레이어까지의 거리 계산
+
+        //빨강 유니크용 
+        if (isUnique && uniqueType == 0 && type == 0)
+        {
+            // 바라보는 방향만 플레이어 쪽으로
+            sr.flipX = player.position.x < transform.position.x;
+
+            // 이동은 하지 않음
+            // 공격 타이밍은 기존 로직(Attack 호출)에 맡김
+            return;
+        }
+
+        // 원거리 적 이동
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+        if (type == 2)
+        {
+            float safeDistance = attackRange;  // 플레이어가 너무 가까우면 도망
+            if (isAttacking) //공격 중 중지
+            {
+                isRunning = false;
+                return;
+            }
+            // 플레이어가 너무 가까우면 반대 방향으로 이동
+            if (distance < safeDistance / 1.5f)
+            {
+                if(isAttacking) return;
+
+                Vector2 dir = (transform.position - player.position).normalized;
+                rb.MovePosition(rb.position + dir * moveSpeed * Time.fixedDeltaTime);
+                isRunning = true;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100){
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer+Random.Range(0,2f);
+                }
+            }
+            else if (distance <= safeDistance)
+            {
+                isRunning = false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100){
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer+Random.Range(0,2f);
+                }
+            }
+            else
+            {
+                if(isAttacking) return;
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+                isRunning=true;
+            }
+            sr.flipX = player.position.x < transform.position.x;
+            return;
+        }
+        else if (type == 0 || type == 101){ //근거리 전용 이동
+            if(type==101&&isAttacking) return;
+            // 공격 범위 밖이면 플레이어 쪽으로 이동
+            if (distance > attackRange)
+            {
+                if(isAttacking) return;
+                Vector2 direction = (player.position - transform.position).normalized;
+                rb.MovePosition(rb.position + direction * moveSpeed*Time.fixedDeltaTime);
+                isRunning=true;
+            }
+            // 공격 범위 안이면 공격 시도
+            else {
+                isRunning=false;
+                if (timer > lastAttackTime + attackCd / attackSpeed * 100&&type==0)
+                {
+                    StartCoroutine(Attack());
+                    lastAttackTime = timer;
+                }
+            }
+        }
+
+        // 플레이어 방향에 따라 스프라이트 좌우 반전
+        if (player.position.x < transform.position.x)
+            sr.flipX = true;
+        else
+            sr.flipX = false;
+    }
+
+    //공격
+    IEnumerator Attack(){
+        GameObject prefab;
+
+        isAttacking=true;
+        //빨강 유니크 
+        if (isUnique && uniqueType == 0 && type == 0)
+        {
+            Transform player = GameManager.instance.player.transform;
+            float distance = Vector2.Distance(transform.position, player.position);
+
+            // 근접 사거리 밖이면 투사체
+            if (distance > attackRange)
+            {
+                yield return new WaitForSeconds(0.3f); // 다른 적과 동일한 선딜
+
+                // 방향 계산
+                Vector2 dir = (player.position - transform.position).normalized;
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+                GameObject p = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+                p.GetComponent<arrow>().enemy = this;
+            }
+            // 근접 사거리 안이면 기본 근접 공격
+            else
+            {
+                anim.SetTrigger("Attack");
+                yield return new WaitForSeconds(0.3f);
+            
+
+                prefab = Instantiate(
+                    attackPrefab,
+                    new Vector2(transform.position.x, transform.position.y + 0.2f),
+                    Quaternion.Euler(new Vector3(0, 0, sr.flipX ? 180 : 0))
+                );
+                prefab.GetComponent<EnemyAttack>().enemy = this;
+
+                yield return new WaitForSeconds(0.2f);
+            }
+
+            isAttacking = false;
+            yield break;
+        }
+
+        //기본 적
+        if (type==0){
+            anim.SetTrigger("Attack");
+            yield return new WaitForSeconds(0.3f);
+            prefab=Instantiate(attackPrefab,new Vector2(transform.position.x,transform.position.y+0.2f),Quaternion.Euler(new Vector3(0,0,sr.flipX?180:0)));
+            prefab.GetComponent<EnemyAttack>().enemy=this;
+            yield return new WaitForSeconds(0.2f);
+        }
+        // 원거리 적
+        else if (type == 2)
+        {
+            isAttacking = true;
+            yield return new WaitForSeconds(0.5f); // 공격 모션 대기
+
+            // 1발째 발사
+            GameObject p = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+            p.GetComponent<arrow>().enemy=this;
+            yield return new WaitForSeconds(0.3f);
+
+
+            isAttacking = false;
+        }
+        //색보스1
+        else if(type==1){
+            int randomSkill=Random.Range(1,3);
+            if(randomSkill==1){
+                anim.SetTrigger("Attack");
+                immune+=1;
+                col.enabled=false;
+                for(float i=0;i<15;){
+                    transform.position+=new Vector3(0,Time.deltaTime*30,0);
+                    yield return null;
+                    i+=Time.deltaTime*30;
+                }
+                Vector2 pos = GameManager.instance.player.transform.position;
+                prefab=Instantiate(bossSkill[0],pos,transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
+
+                yield return new WaitForSeconds(0.40f);
+                transform.position=pos+new Vector2(0,10);
+                for(float i=0;i<10;){
+                    transform.position-=new Vector3(0,Time.deltaTime*30,0);
+                    yield return null;
+                    i+=Time.deltaTime*30;
+                }
+                col.enabled=true;
+                immune-=1;
+            }
+            else{
+                for(int i=0;i<5;i++){
+                    prefab=Instantiate(bossSkill[1],GameManager.instance.player.transform.position,transform.rotation);
+                    prefab.GetComponent<EnemyAttack>().enemy=this;
+                    yield return new WaitForSeconds(0.2f);
+                }
+            }
+        }
+        //최종 보스
+        else if(type==101){
+            anim.SetTrigger("Attack");
+            int randomSkill=Random.Range(1,3);
+            if(randomSkill==1){
+                prefab=Instantiate(bossSkill[0],GameManager.instance.player.transform.position,transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
+                yield return new WaitForSeconds(1f);
+            }
+            else{
+                prefab=Instantiate(bossSkill[1],transform.position+new Vector3(0,1,0),transform.rotation);
+                prefab.GetComponent<EnemyAttack>().enemy=this;
+                yield return new WaitForSeconds(1f);
+            }
+        }
+        isAttacking=false;
+    }
+
+    //피해 입기
+    public IEnumerator HitColor(){
+        sr.GetPropertyBlock(mpb);
+        mpb.SetFloat("_IsDamaged", 1f);
+        sr.SetPropertyBlock(mpb);
+        yield return new WaitForSeconds(0.15f);
+        sr.GetPropertyBlock(mpb);
+        mpb.SetFloat("_IsDamaged", 0f);
+        sr.SetPropertyBlock(mpb);
+    }
+
+    //사망
+    public void Die(){
+        dead=true;
+        Instantiate(dieEffect,transform.position,transform.rotation);
+        GameManager.instance.EnmeyDie();
+        Destroy(gameObject);
+    }
+}
+
